@@ -1,0 +1,68 @@
+{% extends 'base/indexBase.html' %}
+{% block navbar %}
+<div class="collapse navbar-collapse mx-5" id="navbarSupportedContent">
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <li class="nav-item">
+
+      </li>
+    </ul>
+  </div>
+{% endblock navbar %}
+
+{% block content %}
+<style>
+    .card {
+  width: 350px;
+  padding: 10px;
+  border-radius: 40px;
+  background: #fff;
+  border: none;
+  height: 350px;
+  position: relative;
+}
+
+.container {
+  height: 100vh;
+}
+
+body {
+  background: #eee;
+}
+
+.mobile-text {
+  color: #989696b8;
+  font-size: 15px;
+}
+
+.form-control {
+  margin-right: 12px;
+}
+
+.form-control:focus {
+  color: #495057;
+  background-color: #fff;
+  border-color: #ff8880;
+  outline: 0;
+  box-shadow: none;
+}
+
+.cursor {
+  cursor: pointer;
+}
+</style>
+<div style="margin-top: 80px;">
+  {% include 'base/messages.html' %}
+    <div class="d-flex justify-content-center align-items-center container">
+        <form action="/verifyOtp/{{ id }}" method="post">
+            {% csrf_token %}
+            <div class="card py-5 px-3 rounded">
+                <h5 class="m-0">Contact Number verification</h5><span class="mobile-text">Enter the code we just send on your contact number <b class="text-danger">+91 {{ phone }}</b></span>
+                <div class="d-flex flex-row mt-5"><input type="text" class="form-control" name="num1" autofocus="" autocomplete="off" > <input type="text" name="num2" class="form-control" autocomplete="off" ><input type="text" name="num3" class="form-control" autocomplete="off" ><input type="text" name="num4" class="form-control" autocomplete="off" ><input type="text" name="num5" class="form-control" autocomplete="off" ><input type="text" name="num6" class="form-control" autocomplete="off" ><input type="text" name="type" value="donor" class="form-control" hidden></div>
+                <div class="text-center mt-4"><button class="btn btn-primary" type="submit">Verify OTP</button></div>
+                <!-- <div class="text-center mt-1"><span class="d-block mobile-text">Don't receive the code?</span><span class="font-weight-bold text-danger cursor">Resend</span></div> -->
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock content %}

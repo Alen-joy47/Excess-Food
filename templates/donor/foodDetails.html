@@ -1,0 +1,60 @@
+{% extends 'base/indexBase.html' %}
+{% load static %}
+{% block content %}
+{% block navbar %}
+<div class="collapse navbar-collapse mx-5" id="navbarSupportedContent">
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <li class="nav-item">
+      </li>
+    </ul>
+    <a href="/donorHome/" class="mx-3"><button class="btn btn-danger text-white" type="button"><b>Back</b></button></a>
+  </div>
+{% endblock navbar %}
+<div style="margin-top: 20px;">
+    <section class="h-100">
+        <div class="container py-5 h-100">
+          <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col">
+              <div class="card card-registration my-4">
+                <div class="row g-0">
+                  <div class="col-xl-6 d-flex justify-content-center align-items-center">
+                    <img src="{{ food.image.url }}" class="w-100 h-100 rounded align-items-center" style="border-top-left-radius: .3rem; border-top-right-radius: .3rem;" alt="Sample photo">
+                  </div>
+                  <div class="col-xl-6">
+                    <div class="card-body p-md-4 text-black">
+                      <h3 class="mb-5 text-uppercase text-center">Food Details</h3>
+    
+                      <h5>Food Name : </h5>
+                      <p style="font-size: 20px;">{{ food.name }}</p>
+    
+                      <h5>Food Type : </h5>
+                      
+                      {% if food.type == "Pure Veg" %}
+                      <p class="text-white bg-success rounded text-center w-25" >{{ food.type }}</p>
+                      {% else %}
+                      <p class="text-white bg-danger rounded text-center w-25" >{{ food.type }}</p>
+                      {% endif %}
+    
+                      <h5>Ingredients added : </h5>
+                      <p>{{ food.ingredients }}.</p>
+                      
+                      <h5>Food Description : </h5>
+                      <p>{{ food.description }}.</p>
+    
+                      <div class="text-center">
+                        <a href="" class="mx-3"><button class="btn btn-warning">Test Food</button></a>
+                        <a href="" class="mx-3"> <button class="btn btn-primary">Buy Food</button></a>
+                        
+                      </div>
+      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </section>
+</div>
+{% endblock content %}
+    
