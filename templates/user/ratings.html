@@ -1,0 +1,47 @@
+{% extends 'base/indexBase.html' %}
+{% load static %}
+
+
+{% block content %}
+{% block navbar %}
+<div class="collapse navbar-collapse mx-5" id="navbarSupportedContent">
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <li class="nav-item">
+      <a class="nav-link active" aria-current="page" href="/userHome/">Home</a>
+      </li>
+    </ul>
+    <a href="/userHome/" class="mx-3"><button class="btn btn-danger text-white" type="button"><b>Back</b></button></a>
+  </div>
+{% endblock navbar %}
+<div class="" style="margin-top: 80px;">
+  {% include 'base/messages.html' %}
+  <form id="myForm">
+    <label for="selectField1">Select Field 1:</label>
+    <select id="selectField1" name="selectField1">
+        <option value="option1">Option 1</option>
+        <option value="option2">Option 2</option>
+        <option value="option3">Option 3</option>
+    </select>
+
+    <br>
+
+    <label for="selectField2">Select Field 2:</label>
+    <select id="selectField2" name="selectField2">
+        <option value="optionA">Option A</option>
+        <option value="optionB">Option B</option>
+        <option value="optionC">Option C</option>
+    </select>
+
+    <br>
+
+    <label for="textArea">Text Area:</label>
+    <textarea id="textArea" name="textArea" rows="4" cols="50"></textarea>
+
+    <br>
+
+    <button type="button" onclick="clearAll()">Clear All</button>
+    <button type="button" onclick="saveForm()">Save</button>
+</form>
+</div>
+{% endblock content %}
+    

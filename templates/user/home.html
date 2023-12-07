@@ -5,12 +5,13 @@
 <div class="collapse navbar-collapse mx-5" id="navbarSupportedContent">
   <ul class="navbar-nav me-auto mb-2 mb-lg-0">
     <li class="nav-item">
+      <a class="nav-link active" aria-current="page" href="/userHome/">Home</a>
     </li>
   </ul>
   <div class="dropdown">
-    <button class="btn btn-info" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
+    <button class="btn btn-info mx-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">Others</button>
     <ul class="dropdown-menu">
-      <li><a class="dropdown-item" href="/profileInfo/1">Profile</a></li>
+      <li><a class="dropdown-item" href="/profileInfo/{{ id }}/1">Profile</a></li>
       <li><a class="dropdown-item" href="#">Request for food</a></li>
       <li><a class="dropdown-item" href="/rating/1">Review/Ratings</a></li>
     </ul>

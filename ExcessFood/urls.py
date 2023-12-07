@@ -31,13 +31,19 @@ urlpatterns = [
     path('addFood/<int:id>', add_food, name="add_food"),
     path('donorHome/', donorHome, name="donorHome"),
     path('getFood/<int:id>/<int:category>', get_food, name="get_food"),
+    path('viewFood/<int:id>', view_food, name="viewFood"), # type: ignore
+    path('changeFoodStatus/<int:id>/<int:value>', change_food_status, name="changeFoodStatus"), # type: ignore
+    path('get_food_details/', get_food_to_edit, name="getFoodData"), # type: ignore
+    path('deleteFood/<int:id>/', delete_food, name="deleteFood"), # type: ignore
+    path('updateFood/', update_food, name="update_food"), # type: ignore
 
     # user
     path('loginUser/', userLogin, name="userLogin"),
     path('signupUser/', userSignup, name="userSignup"),
     path('userHome/', userHome, name="userHome"),
-    path('profileInfo/<int:id>/<int:category>', profile, name="userHome"), # type: ignore
-    path('ratings/<int:id>/<int:category>', ratings, name="userHome"), # type: ignore
+    path('profileInfo/<int:id>/<int:category>', profile, name="profiles"), # type: ignore
+    path('ratings/<int:category>', ratings, name="ratings"), # type: ignore
+    path('editProfile/<int:id>/<int:category>', editProfile, name="editProfile"), # type: ignore
 ]
 
 

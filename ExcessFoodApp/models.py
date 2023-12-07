@@ -16,6 +16,7 @@ class Donor(models.Model):
     otp = models.CharField(max_length=6, null=True)
     is_enabled = models.IntegerField(default=1)
     created_date = models.DateTimeField(null=True)
+    updated_date = models.DateTimeField(null=True)
 
     class Meta:
         db_table = "donors"
@@ -30,6 +31,8 @@ class Food(models.Model):
     image = models.ImageField(upload_to="food_images/" , max_length=250, null=False, default=None)
     is_enabled = models.IntegerField(default=1)
     created_date = models.DateTimeField(null=True)
+    updated_date = models.DateTimeField(null=True)
+
 
     class Meta:
         db_table = "foods"
@@ -45,18 +48,39 @@ class User(models.Model):
     otp = models.CharField(max_length=6, null=True)
     is_enabled = models.IntegerField(default=1)
     created_date = models.DateTimeField(null=True)
+    updated_date = models.DateTimeField(null=True)
+
 
     class Meta:
         db_table = "users"
 
 class Rating(models.Model):
+    order_id = models.IntegerField(null=True)
     food_id = models.IntegerField(null=False)
     donor_id = models.IntegerField(null=False)
     user_id = models.IntegerField(null=False)
-    ratings = models.IntegerField(null=False)
+    ratings = models.IntegerField(null=True)
     description = models.TextField(null=True)
     is_enabled = models.IntegerField(default=1)
     created_date = models.DateTimeField(null=True)
+    updated_date = models.DateTimeField(null=True)
+
 
     class Meta:
         db_table = "ratings"
+
+class Order(models.Model):
+    order_id = models.IntegerField(null=True)
+    food_id = models.IntegerField(null=False)
+    donor_id = models.IntegerField(null=False)
+    user_id = models.IntegerField(null=False)
+    address = models.TextField(null=True)
+    description = models.TextField(null=True)
+    order_status = models.IntegerField(default=1)
+    is_rated = models.IntegerField(default=0)
+    created_date = models.DateTimeField(null=True)
+    updated_date = models.DateTimeField(null=True)
+
+
+    class Meta:
+        db_table = "orders"
