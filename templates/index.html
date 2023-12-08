@@ -16,6 +16,8 @@
   <div class="card-group">
     <div class="row">
       {% for food in foods %}
+      
+      {% if food.quantity > 0 %}
       <div class="col-3">
         <div class="card my-3">
           <img src="{{ food.image.url }}" class="card-img-top" alt="..." height="250px">
@@ -40,6 +42,8 @@
           </div>
         </div>
       </div>
+      {% endif %}
+        
       {% endfor %}
     </div>
   </div>

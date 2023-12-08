@@ -30,6 +30,7 @@ function editFood(id) {
       $("#name").val(data.name);
       $("#type").val(data.type);
       // $("#ingredients").val(data.ingredients);
+      $("#qty").val(data.quantity);
       $("#description").val(data.description);
       $("#images").val(data.image);
 
@@ -52,3 +53,8 @@ function editFood(id) {
     },
   });
 }
+
+  function orderNow() {
+    $("#heading").text("Order Food");
+    $("#orderFoodModal").modal("show");
+  }

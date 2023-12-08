@@ -1,5 +1,6 @@
 from email import message
 from email.mime import image
+from random import random
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from rest_framework.decorators import api_view
@@ -8,6 +9,8 @@ from .helpers import send_otp_to_phone
 from .models import *
 from django.contrib import messages
 from django.core.serializers.json import DjangoJSONEncoder
+import random
+
 
 utc_now = timezone.now()
 
@@ -153,12 +156,13 @@ def add_food(request, id):
         if ingredient:  # Check if the list is not empty
             ingredients += ingredient[-1]  # Append the last element
 
+        quantity = request.POST['qty']
         description = request.POST['description']
 
         food = Food.objects.filter(name = name).first()
         if food == None:
             id = request.session['donorid']
-            foods = Food(name = name, type = type, ingredients = ingredients, description = description, image = request.FILES['images'], donor_id = id, created_date = formatted_time)
+            foods = Food(name = name, type = type, ingredients = ingredients, quantity = quantity, description = description,  image = request.FILES['images'], donor_id = id, created_date = formatted_time)
             foods.save()
             foods = Food.objects.filter(is_enabled = 1).all()
             messages.success(request, "Food added successfully...!")
@@ -224,8 +228,8 @@ def profile(request, id, category):
 
 def ratings(request, category):
     if category == 0:
-        donor = Donor.objects.filter(id = id).first()
-        return render(request, "donor/ratings.html", {"donor" : donor})
+        # donor = Donor.objects.filter(id = id).first()
+        return render(request, "donor/ratings.html")
     else:
         id = request.session['userid']
         user = User.objects.filter(id = id).first()
@@ -277,7 +281,6 @@ def editProfile(request, id, category):
             user = User.objects.filter(id = user_id).first()
             return render(request, "user/profile.html", {"user" : user})
 
-
 def view_food(request, id):
     foods = Food.objects.filter(donor_id = id).all()
     id = request.session['donorid']
@@ -290,7 +293,7 @@ def change_food_status(request, id, value) :
     id = food.donor_id
     foods = Food.objects.filter(donor_id = id).all()
     messages.success(request, "Food status has been updated...!")
-    return render(request, "donor/viewFood.html", {"id" : id, "foods" : foods})
+    return render(request, "donor/viewFood.html", {"id" : id, "ingredients" : ingredients, "foods" : foods})
 
 def delete_food(request, id):
     food = Food.objects.get(id = id)
@@ -298,7 +301,7 @@ def delete_food(request, id):
     id = request.session['donorid']
     foods = Food.objects.filter(donor_id = id).all()
     messages.success(request, "Food has been deleted successfully...!")
-    return render(request, "donor/viewFood.html", {"id" : id, "foods" : foods})
+    return render(request, "donor/viewFood.html", {"id" : id, "ingredients" : ingredients, "foods" : foods})
 
 def get_food_to_edit(request):
     if request.method == 'GET':
@@ -312,6 +315,7 @@ def get_food_to_edit(request):
                     'name': food.name,
                     'type': food.type,
                     'ingredients': food.ingredients,
+                    'quantity': food.quantity,
                     'description': food.description,
                     # 'image': food.image,
                 }
@@ -323,7 +327,6 @@ def get_food_to_edit(request):
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     
-
 def update_food(request):
     if request.method == "POST" : 
         id = request.POST['id']
@@ -334,22 +337,55 @@ def update_food(request):
         if ingredient:  # Check if the list is not empty
             ingredients += ingredient[-1]  # Append the last element
 
+        quantity = request.POST['qty']
+        description = request.POST['description']
+        food =Food.objects.get(id = id)
+        food.name = name
+        food.type = type
+        food.ingredients = ingredients
+        food.quantity = quantity
+        food.description = description
+        food.image = request.FILES['images']
+        food.updated_date = formatted_time # type: ignore
+        food.save()
+        id = request.session['donorid']
+        foods = Food.objects.filter(is_enabled = 1).all()
+        messages.success(request, "Food updated successfully...!")
+        return render(request, "donor/home.html", {"id" : id, "ingredients" : ingredients, "foods" : foods})
+    
+def order_food(request):
+    if request.method == "POST":
+        food_id = request.POST['food_id']
+        donor_id = request.POST['donor_id']
+        user_id = request.session['userid']
+        quantity = int(request.POST['quantity'])
+        address = request.POST['address']
         description = request.POST['description']
 
-        food = Food.objects.filter(name = name).first()
-        if food == 1 or food == None:
-            food =Food.objects.get(id = id)
-            food.name = name
-            food.type = type
-            food.ingredients = ingredients
-            food.description = description
-            food.image = request.FILES['images']
-            food.updated_date = formatted_time # type: ignore
-            food.save()
-            id = request.session['donorid']
-            foods = Food.objects.filter(is_enabled = 1).all()
-            messages.success(request, "Food updated successfully...!")
-            return render(request, "donor/home.html", {"id" : id, "ingredients" : ingredients, "foods" : foods})
-        else:
-            messages.error(request, "Duplicate food name...!")
-            return redirect("donorHome")
+        order_id = random.randrange(111111, 999999)
+
+        order = Order(order_id =order_id, food_id = food_id, donor_id = donor_id, user_id = user_id, quantity = quantity, address = address, description = description, created_date = formatted_time)
+        order.save()
+        food = Food.objects.get(id = food_id)
+        food.quantity -= quantity # type: ignore
+        food.save()
+        id = request.session['userid']
+        foods = Food.objects.filter(is_enabled = 1).all()
+        messages.success(request, "Food ordered successfully...!")
+        return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
+
+def view_history(request):
+    id = request.session['userid']
+    orders = Order.objects.filter(user_id = id).all()
+    foods = Food.objects.all()
+    donors = Donor.objects.all()
+    return render(request, "user/orderHistory.html", {"orders" : orders, "foods" : foods, "donors" : donors})
+
+
+def view_request(request):
+    id = request.session['donorid']
+    print(id)
+    orders = Order.objects.filter(donor_id = id).all()
+    foods = Food.objects.all()
+    users = User.objects.all()
+    return render(request, "donor/viewRequest.html", {"orders" : orders, "foods" : foods, "users" : users})

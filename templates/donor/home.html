@@ -10,17 +10,33 @@
     <li class="nav-item mx-3">
       <a class="nav-link active" aria-current="page" href="/viewFood/{{ id }}">Food List</a>
     </li>
+    <li class="nav-item mx-3">
+      <a class="nav-link active" aria-current="page" href="/viewRequest/">Food Request</a>
+    </li>
   </ul>
   <div class="dropdown">
-    <button class="btn btn-info mx-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">Others</button>
+    <button class="btn btn-info mx-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <span class="dark-blue-text"><i
+        class="fas fa-bars fa-1x"></i></span>
+    </button>
     <ul class="dropdown-menu">
       <li><a class="dropdown-item" href="/profileInfo/{{ id }}/0">Profile</a></li>
       <li><a class="dropdown-item" href="#">Request for food</a></li>
-      <li><a class="dropdown-item" href="/rating/{{ id }}/0">Review/Ratings</a></li>
+      <li><a class="dropdown-item" href="/ratings/0">Review/Ratings</a></li>
     </ul>
   </div>
-  <a href="/logoutNow/" class="mx-3"><button class="btn btn-danger text-white" type="button"><b>Logout</b></button></a>
+  <a href="/logoutNow/" class="mx-3"><button class="btn btn-danger text-white" type="button"><img width="28" height="28" src="https://img.icons8.com/sf-regular/48/FFFFFF/exit.png" alt="exit"/></button></a>
 </div>
+<style>
+.dropdown:hover>.dropdown-menu {
+  display: block;
+}
+
+.dropdown>.dropdown-toggle:active {
+  /*Without this, clicking will make it sticky*/
+    pointer-events: none;
+}
+</style>
 {% endblock navbar %}
 
 {% block floatingButton %}
@@ -36,6 +52,8 @@
   <div class="card-group">
     <div class="row">
       {% for food in foods %}
+      
+      {% if food.quantity > 0 %}
       <div class="col-3">
         <div class="card my-3">
           <img src="{{ food.image.url }}" class="card-img-top" alt="..." height="250px">
@@ -61,6 +79,8 @@
           </div>
         </div>
       </div>
+      {% endif %}
+        
       {% endfor %}
     </div>
   </div>
@@ -108,6 +128,12 @@
             {% endfor %}
           </div>
 
+          <!-- Input Text Field -->
+          <div class="form-group">
+            <label for="textInput">Food Quantity</label>
+            <input type="number" class="form-control" id="qty" name="qty" placeholder="Enter quantity" required>
+          </div>
+
           <!-- Textarea Field -->
           <div class="form-group">
             <label for="textareaField">Description:</label>
@@ -125,7 +151,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Save changes</button>
+          <button type="submit" class="btn btn-primary">Save</button>
         </div>
       </form>
     </div>

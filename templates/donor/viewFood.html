@@ -56,8 +56,6 @@
                     <td><a href="/changeFoodStatus/{{food.id}}/0" class="btn btn-danger btn-sm">Deactivate</a></td>
                     <td><button class="btn btn-warning btn-sm" onclick="editFood('{{food.id}}');">Edit</button></td>
                     <td><a href="/deleteFood/{{food.id}}" class="btn btn-danger btn-sm">Delete</a></td>
-                    <td><button class="btn btn-warning" onclick="editProfile();"><i
-                      class="fa-regular fa-pen-to-square fa-lg"></i> <b>Edit</b></button></td>
                     {% endif %}
                 </tr>
                 {% empty %}
@@ -119,6 +117,12 @@
             {% endfor %}
           </div>
 
+          <!-- Input Text Field -->
+          <div class="form-group">
+            <label for="textInput">Food Quantity</label>
+            <input type="number" class="form-control" id="qty" name="qty" placeholder="Enter quantity" required>
+          </div>
+
           <!-- Textarea Field -->
           <div class="form-group">
             <label for="textareaField">Description:</label>
@@ -142,7 +146,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Save changes</button>
+          <button type="submit" class="btn btn-primary">Update Food</button>
         </div>
       </form>
     </div>

@@ -1,0 +1,112 @@
+{% extends 'base/indexBase.html' %}
+{% load static %}
+
+
+{% block content %}
+{% block navbar %}
+<div class="collapse navbar-collapse mx-5" id="navbarSupportedContent">
+  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+    <li class="nav-item">
+      <a class="nav-link active" aria-current="page" href="/donorHome/">Home</a>
+    </li>
+  </ul>
+  <a href="/donorHome/" class="mx-3"><button class="btn btn-danger text-white" type="button"><b>Back</b></button></a>
+</div>
+{% endblock navbar %}
+<div style="margin-top: 80px;">
+    {% include 'base/messages.html' %}
+    <div class="container-fluid">
+        <div class="my-3">
+            <h3 style="color: white;">Food Requested View</h3>
+        </div>
+      <table>
+        <thead>
+          <tr class="text-center">
+            <th>No</th>
+            <th>Image</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+          <tr>
+            <td class="text-center">{{ forloop.counter }}</td>
+            {% for food in foods %}
+                {% if order.food_id == food.id %}
+                <td class="d-flex justify-content-center align-items-center text-nowrap"><img src="{{ food.image.url }}" alt="product_image" height="200px" width="230px" style="border-radius: 20%; border-color: blue;"></td>
+                {% endif %}
+              {% endfor%}
+            <td>
+              <table class="nested-table">
+                <tr>
+                  <th class="vertical-heading" style="width: 200px;">Order Id</th>
+                  <td class="nested-td">{{ order.order_id }}</td>
+                </tr>
+                <tr>
+                  <th class="vertical-heading">Food Name :</th>
+                  {% for food in foods %}
+                    {% if order.food_id == food.id %}
+                    <td class="nested-td text-nowrap">{{food.name}}</td>
+                    {% endif %}
+                  {% endfor%}
+                </tr>
+                <tr>
+                  <th class="vertical-heading">User Name :</th>
+                  {% for user in users %}
+                    {% if user.id == order.user_id %}
+                      <td class="nested-td text-nowrap">{{user.name}}</td> 
+                    {% endif %}
+                  {% endfor %}
+                </tr>
+                <tr>
+                  <th class="vertical-heading">Ordered Quantity :</th>
+                  <td class="nested-td">{{order.quantity}}</td>
+                </tr>
+                <tr>
+                  <th class="vertical-heading text-nowrap">Descriptions :</th>
+                  <td class="nested-td text-nowrap">{{ order.description|wordwrap:40|linebreaksbr }}</td>
+                </tr>
+                <!-- Add more rows as needed -->
+              </table>
+            </td>
+          </tr>
+          {% endfor%}
+          <!-- Add more rows as needed -->
+        </tbody>
+      </table>
+      <style>
+        table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+    
+        th, td {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        }
+    
+        th {
+          background-color: #f2f2f2;
+        }
+    
+        .nested-table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+    
+        /* .nested-th, .nested-td {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        } */
+    
+          /* .vertical-heading {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+          } */
+      </style>
+    </div>
+</div>
+{% endblock content %}
+  

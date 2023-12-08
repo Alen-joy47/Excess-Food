@@ -43,8 +43,8 @@
                       <p>{{ food.description }}.</p>
     
                       <div class="text-center">
-                        <a href="" class="mx-3"><button class="btn btn-warning">Test Food</button></a>
-                        <a href="" class="mx-3"> <button class="btn btn-primary">Buy Food</button></a>
+                        <button class="btn btn-warning mx-3">Test Food</button>
+                        <button class="btn btn-primary mx-3" onclick="orderNow();">Buy Food</button>
                       </div>
                     </div>
                   </div>
@@ -55,5 +55,93 @@
         </div>
     </section>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="orderFoodModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form action="/orderFood/" method="post">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title text-primary" id="heading">Order Food</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-bs-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <input type="text" class="form-control" id="food_id" value="{{ food.id }}" name="food_id" hidden>
+            <input type="text" class="form-control" id="donor_id" value="{{ food.donor_id }}" name="donor_id" hidden>
+          
+          <!-- Input Text Field -->
+          <div class="form-group">
+            <label for="textInput">Food Quantity</label>
+              <div class="row">
+                  <div class="col-1 me-2">
+                      <button type="button" class=" btn btn-secondary decrease-btn"
+                          id="decrease-btn"
+                          onclick="decreaseQuantity();">-</button>
+                  </div>
+                  <div class="col">
+                      <input type="text" class="form-control text-center quantity"
+                          id="quantity"
+                          name="quantity" value="1" placeholder="Quantity"
+                          required readonly>
+
+                  </div>
+                  <div class="col-1 me-3">
+                      <button type="button" class=" btn btn-secondary increase-btn"
+                          id="increase-btn"
+                          onclick="increaseQuantity();">+</button>
+                  </div>
+              </div>
+            </div>
+          <!-- Textarea Field -->
+          <div class="form-group">
+            <label for="textareaField">Address:</label>
+            <textarea class="form-control" id="address" placeholder="Address" name="address" rows="3"></textarea>
+          </div>
+          <!-- Textarea Field -->
+          <div class="form-group">
+            <label for="textareaField">Description:</label>
+            <textarea class="form-control" id="description" placeholder="Description" name="description" rows="3"></textarea>
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  let quantityInput = document.getElementById('quantity');
+  let totalAmount = document.getElementById('total');
+  let price = "{{ product.price }}"; // Set your initial price here
+
+  function increaseQuantity() {
+    let currentQuantity = parseInt(quantityInput.value);
+    currentQuantity++;
+    quantityInput.value = currentQuantity;
+    updatePrice();
+  }
+
+  function decreaseQuantity() {
+    let currentQuantity = parseInt(quantityInput.value);
+    if (currentQuantity > 1) {
+      currentQuantity--;
+      quantityInput.value = currentQuantity;
+      updatePrice();
+    }
+  }
+
+  function updatePrice() {
+    let currentQuantity = parseInt(quantityInput.value);
+    let amount = parseFloat(price)
+    totalAmount.value = (amount * currentQuantity);
+  }
+</script>
 {% endblock content %}
     

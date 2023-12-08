@@ -29,12 +29,14 @@
                       <p style="font-size: 20px;">{{ food.name }}</p>
     
                       <h5>Food Type : </h5>
-                      
                       {% if food.type == "Pure Veg" %}
                       <p class="text-white bg-success rounded text-center w-25" >{{ food.type }}</p>
                       {% else %}
                       <p class="text-white bg-danger rounded text-center w-25" >{{ food.type }}</p>
                       {% endif %}
+
+                      <h5>Food Quantity : </h5>
+                      <p><b>{{ food.quantity }}</b></p>
     
                       <h5>Ingredients added : </h5>
                       <p>{{ food.ingredients }}.</p>

@@ -4,26 +4,44 @@
 {% block navbar %}
 <div class="collapse navbar-collapse mx-5" id="navbarSupportedContent">
   <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-    <li class="nav-item">
+    <li class="nav-item mx-3">
       <a class="nav-link active" aria-current="page" href="/userHome/">Home</a>
+    </li>
+    <li class="nav-item mx-3">
+      <a class="nav-link active" aria-current="page" href="/viewHistory/">History</a>
     </li>
   </ul>
   <div class="dropdown">
-    <button class="btn btn-info mx-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">Others</button>
+    <button class="btn btn-info mx-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <span class="dark-blue-text"><i
+        class="fas fa-bars fa-1x"></i></span>
+    </button>
     <ul class="dropdown-menu">
       <li><a class="dropdown-item" href="/profileInfo/{{ id }}/1">Profile</a></li>
       <li><a class="dropdown-item" href="#">Request for food</a></li>
-      <li><a class="dropdown-item" href="/rating/1">Review/Ratings</a></li>
+      <li><a class="dropdown-item" href="/ratings/1">Review/Ratings</a></li>
     </ul>
   </div>
-  <a href="/logoutNow/" class="mx-3"><button class="btn btn-danger text-white" type="button"><b>Logout</b></button></a>
+  <a href="/logoutNow/" class="mx-3"><button class="btn btn-danger text-white" type="button"><img width="28" height="28" src="https://img.icons8.com/sf-regular/48/FFFFFF/exit.png" alt="exit"/></button></a>
 </div>
+<style>
+.dropdown:hover>.dropdown-menu {
+  display: block;
+}
+
+.dropdown>.dropdown-toggle:active {
+  /*Without this, clicking will make it sticky*/
+    pointer-events: none;
+}
+</style>
 {% endblock navbar %}
 <div class="container-fluid" style="margin-top: 80px;">
   {% include 'base/messages.html' %}
   <div class="card-group">
     <div class="row">
       {% for food in foods %}
+      
+      {% if food.quantity > 0 %}
       <div class="col-3">
         <div class="card my-3">
           <img src="{{ food.image.url }}" class="card-img-top" alt="..." height="250px">
@@ -49,6 +67,9 @@
           </div>
         </div>
       </div>
+        
+      {% endif %}
+        
       {% endfor %}
     </div>
   </div>

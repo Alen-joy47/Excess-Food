@@ -15,33 +15,46 @@
 {% endblock navbar %}
 <div class="" style="margin-top: 80px;">
   {% include 'base/messages.html' %}
-  <form id="myForm">
-    <label for="selectField1">Select Field 1:</label>
-    <select id="selectField1" name="selectField1">
-        <option value="option1">Option 1</option>
-        <option value="option2">Option 2</option>
-        <option value="option3">Option 3</option>
-    </select>
+  <div class="container w-50 mt-5">
+    <h3 class="text-center text-white">Rating</h3>
+    <form>
+        <div class="mb-3">
+            <label for="selectField1" class="form-label">Select Food:</label>
+            <select class="form-select" id="selectField1" name="selectField1">
+                <option value="" selected disabled>Select Food based on Order Id</option>
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+            </select>
+        </div>
 
-    <br>
+        <div class="mb-3">
+            <label for="selectField2" class="form-label">Select Ratings:</label>
+            <select class="form-select" id="selectField2" name="selectField2">
+                <option value="" selected disabled>Select Here</option>
+                <option value="5">Excellent</option>
+                <option value="4">Very Good</option>
+                <option value="3">Good</option>
+                <option value="2">Medium</option>
+                <option value="1">Low</option>
+            </select>
+        </div>
 
-    <label for="selectField2">Select Field 2:</label>
-    <select id="selectField2" name="selectField2">
-        <option value="optionA">Option A</option>
-        <option value="optionB">Option B</option>
-        <option value="optionC">Option C</option>
-    </select>
+        <div class="mb-3">
+            <label for="textArea" class="form-label">Description</label>
+            <textarea class="form-control" id="textArea" name="textArea" rows="4"></textarea>
+        </div>
 
-    <br>
-
-    <label for="textArea">Text Area:</label>
-    <textarea id="textArea" name="textArea" rows="4" cols="50"></textarea>
-
-    <br>
-
-    <button type="button" onclick="clearAll()">Clear All</button>
-    <button type="button" onclick="saveForm()">Save</button>
-</form>
+        <button type="button" class="btn btn-secondary" onclick="clearAll()">Clear All</button>
+        <button type="button" class="btn btn-primary" onclick="saveForm()">Save</button>
+    </form>
 </div>
+
+</div>
+<script>
+    function clearAll() {
+            document.querySelector('form').reset();
+        }
+</script>
 {% endblock content %}
     
