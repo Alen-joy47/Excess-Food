@@ -51,7 +51,7 @@ body {
 }
 </style>
 <div style="margin-top: 80px;">
-  {% include 'base/messages.html' %}
+   
     <div class="d-flex justify-content-center align-items-center container">
         <form action="/verifyOtp/{{ id }}" method="post">
             {% csrf_token %}

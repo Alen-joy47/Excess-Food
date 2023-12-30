@@ -1,0 +1,136 @@
+{% extends 'base/indexBase.html' %}
+{% load static %}
+
+{% block content %}
+
+{% block navbar %}
+<div class="collapse navbar-collapse mx-5" id="navbarSupportedContent">
+  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+    <li class="nav-item">
+      <a class="nav-link active" aria-current="page" href="/donorHome/">Home</a>
+    </li>
+  </ul>
+  <a href="/donorHome/" class="mx-3"><button class="btn btn-danger text-white" type="button"><b>Back</b></button></a>
+</div>
+{% endblock navbar %}
+<div style="margin-top: 80px;">
+     
+    <div class="container-fluid">
+        <div class="my-3">
+            <h3 style="color: white;">Food Request List</h3>
+        </div>
+        <table class="table table-border table-bordered text-center shadow h-100vh bg-white" style="border-radius: 20px;">
+            <thead>
+                <th>#</th>
+                <th>User Name</th>
+                <th>Contact No</th>
+                <th>Food Name</th>
+                <th>Food Type</th>
+                <th>Quantity</th>
+                <th>Date</th>
+                <th>Description</th>
+            </thead>
+            <tbody>
+                {% for food in foods %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td class="text-nowrap text-center">{{food.user_name}}</td>
+                    <td class="text-nowrap">{{ food.contact }}</td>
+                    <td class="text-nowrap">{{ food.food_name }}</td>
+                    <td class="text-nowrap">{{ food.food_type }}</td>
+                    <td class="text-nowrap">{{ food.quantity }}</td>
+                    <td class="text-nowrap">{{ food.date }}</td>
+                    <td class="text-nowrap">{{ food.description|wordwrap:50|linebreaksbr }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td></td>
+                  <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                  <td> <h2 class="text-danger">No data found...!</h2></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                {% endfor%}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="my-3">
+        <h3 style="color: white;">Money Request View</h3>
+    </div>
+  <table>
+    <thead>
+      <tr class="text-center">
+        <th>No</th>
+        <th>Details</th>
+        <th>Image</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for money in moneys %}
+      <tr>
+        <td class="text-center">{{ forloop.counter }}</td>
+        <td>
+          <table class="nested-table">
+            <tr>
+              <th class="vertical-heading" style="width: 200px;">User Name: </th>
+              <td class="nested-td">{{money.user_name}}</td>
+            </tr>
+            <tr>
+              <th class="vertical-heading">Contact :</th>
+                <td class="nested-td text-nowrap">{{ money.contact }}</td>
+            </tr>
+            <!-- Add more rows as needed -->
+          </table>
+          <td><img src="/media/{{ money.image }}" alt="QR_image" height="100px" width="150px" style="border-radius: 20%; border-color: blue;"></td>
+        </td>
+      </tr>
+      <!-- Add more rows as needed -->
+      {% empty %}
+                <tr>
+                  <td></td>
+                  <td> <h2 class="text-danger">No data found...!</h2></td>
+                  <td></td>
+                </tr>
+      {% endfor%}
+    </tbody>
+  </table>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .nested-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    /* .nested-th, .nested-td {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    } */
+
+      /* .vertical-heading {
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+      } */
+  </style>
+</div>
+{% endblock content %}

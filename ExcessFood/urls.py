@@ -37,6 +37,7 @@ urlpatterns = [
     path('deleteFood/<int:id>/', delete_food, name="deleteFood"), # type: ignore
     path('updateFood/', update_food, name="update_food"), # type: ignore
     path('viewRequest/', view_request, name="view_request"), # type: ignore
+    path('requestList/', request_list, name="requestList"), # type: ignore
 
     # user
     path('loginUser/', userLogin, name="userLogin"),
@@ -47,6 +48,9 @@ urlpatterns = [
     path('editProfile/<int:id>/<int:category>', editProfile, name="editProfile"), # type: ignore
     path('orderFood/', order_food, name="order_food"), # type: ignore
     path('viewHistory/', view_history, name="view_history"), # type: ignore
+    path('viewHistory/', view_history, name="view_history"), # type: ignore
+    path('requestForFood/<int:category>', food_request, name="food_request"), # type: ignore
+    path('sendmail/', send_email_to_donor, name="send_email_to_donor"), # type: ignore
 ]
 
 

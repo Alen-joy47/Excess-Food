@@ -1,3 +1,4 @@
+from unittest.util import _MAX_LENGTH
 from django.db import models
 from django.db import models
 from django.utils import timezone
@@ -27,10 +28,13 @@ class Food(models.Model):
     name = models.CharField(max_length=100, null=True)
     type = models.CharField(max_length=100, null=True)
     quantity = models.IntegerField(null=True)
+    prepared_time = models.CharField(max_length=100, null=True)
+    is_deliverable = models.CharField(max_length=100, null=True)
     ingredients = models.TextField(null=True)
     description = models.TextField(null=True)
     image = models.ImageField(upload_to="food_images/" , max_length=250, null=False, default=None)
     is_enabled = models.IntegerField(default=1)
+    is_expaired = models.IntegerField(default=0)
     created_date = models.DateTimeField(null=True)
     updated_date = models.DateTimeField(null=True)
 
@@ -86,3 +90,25 @@ class Order(models.Model):
 
     class Meta:
         db_table = "orders"
+
+
+class UserRequest(models.Model):
+
+    req_type = models.IntegerField(default=1)
+    user_id = models.IntegerField(null=True)
+    food_name = models.CharField(max_length=200, null=True)
+    food_type = models.CharField(max_length=200,null=True)
+    date = models.DateTimeField(null=True)
+    quantity = models.IntegerField(null=True)
+    description = models.TextField(null=True)
+    seen_donor = models.TextField(null=True)
+    req_status = models.IntegerField(default=1)
+    is_read = models.BooleanField(default=False)  # Track the read status
+    image = models.ImageField(upload_to="QR_CODE/" , max_length=250, null=True, default=None)
+    is_delivered = models.IntegerField(default=0)
+    created_date = models.DateTimeField(null=True)
+    updated_date = models.DateTimeField(null=True)
+
+
+    class Meta:
+        db_table = "requests"

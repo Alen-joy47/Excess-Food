@@ -14,23 +14,25 @@
   </div>
 {% endblock navbar %}
 <div class="" style="margin-top: 80px;">
-  {% include 'base/messages.html' %}
-  <div class="container w-50 mt-5">
-    <h3 class="text-center text-white">Rating</h3>
-    <form>
+   
+  <div class="container w-50 mt-5 mb-5">
+    <h3 class="text-center text-white">Ratings</h3>
+    <form action="/ratings/1" method="post">
+        {% csrf_token %}
         <div class="mb-3">
             <label for="selectField1" class="form-label">Select Food:</label>
-            <select class="form-select" id="selectField1" name="selectField1">
+            <select class="form-select" id="order_id" name="order_id" required>
                 <option value="" selected disabled>Select Food based on Order Id</option>
-                <option value="option1">Option 1</option>
-                <option value="option2">Option 2</option>
-                <option value="option3">Option 3</option>
+                
+                {% for order in orders %}
+                <option value="{{order.order_id}}">{{order.name}}------>{{order.order_id}}</option>
+                {% endfor %}
             </select>
         </div>
 
         <div class="mb-3">
             <label for="selectField2" class="form-label">Select Ratings:</label>
-            <select class="form-select" id="selectField2" name="selectField2">
+            <select class="form-select" id="ratings" name="ratings" required>
                 <option value="" selected disabled>Select Here</option>
                 <option value="5">Excellent</option>
                 <option value="4">Very Good</option>
@@ -42,12 +44,56 @@
 
         <div class="mb-3">
             <label for="textArea" class="form-label">Description</label>
-            <textarea class="form-control" id="textArea" name="textArea" rows="4"></textarea>
+            <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
         </div>
 
         <button type="button" class="btn btn-secondary" onclick="clearAll()">Clear All</button>
-        <button type="button" class="btn btn-primary" onclick="saveForm()">Save</button>
+        <button type="submit" class="btn btn-primary" onclick="saveForm()">Save</button>
     </form>
+</div>
+
+<div style="margin-top: 80px;">
+     
+    <div class="container-fluid">
+        <div class="my-3">
+            <h3 style="color: white;">Ratings View</h3>
+        </div>
+        <table class="table table-border table-bordered text-center shadow h-100vh bg-white" style="border-radius: 20px;">
+            <thead>
+                <th>#</th>
+                <th>order_id</th>
+                <th>Food Name</th>
+                <th>Donor Name</th>
+                <th>Ratings</th>
+                <th>Description</th>
+            </thead>
+            <tbody>
+                {% for rating in ratings %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <!-- <td><img src="{{ rating.image.url}}" alt="food_image" height="100px" width="150px" style="border-radius: 20%; border-color: blue;"></td> -->
+                    <td class="text-nowrap text-center  ">{{rating.order_id}}</td>
+                    <td class="text-nowrap" class="text-nowrap">{{ rating.food_name }}</td>
+                    <td class="text-nowrap">{{ rating.donor_name }}</td>
+                    <td class="text-nowrap">{{ rating.ratings }} Star</td>
+                    <td class="text-nowrap">{{ rating.description|wordwrap:50|linebreaksbr }}</td>
+                    
+                </tr>
+                {% empty %}
+                <tr>
+                  <td></td>
+                  <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                  <td> <h2 class="text-danger">No data found...!</h2></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                {% endfor%}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 </div>

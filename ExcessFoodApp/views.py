@@ -1,15 +1,19 @@
 from email import message
 from email.mime import image
 from random import random
+from urllib.request import Request
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .helpers import send_otp_to_phone
+from django.shortcuts import get_object_or_404
+from ExcessFoodApp.rawQuery import *
+from .helpers import *
 from .models import *
 from django.contrib import messages
 from django.core.serializers.json import DjangoJSONEncoder
 import random
+import time
 
 
 utc_now = timezone.now()
@@ -22,7 +26,6 @@ formatted_time = ist_now.strftime('%Y-%m-%d %H:%M:%S')
 
 ingredients = ["Eggs", "Milk and milk products", "Fats and oils", "Fruits", "Grain", "Nuts and baking products", "Herbs and spices",
                                     "Meat", "Sausages and fish", "Pasta, rice and pulses"]
-
 
 def indexPage(request):
     foods = Food.objects.filter(is_enabled = 1).all()
@@ -38,12 +41,21 @@ def donorLogin(request):
                 request.session['donorid'] = donor.id # type: ignore
                 foods = Food.objects.filter(is_enabled = 1).all()
                 id = request.session['donorid']
+
+                # Display the list of unread requests
+                unread_requests = UserRequest.objects.filter(is_read=False).exclude(seen_donor__contains=str(id))
+                
+                # Get and reset the unread request count
+                count = unread_requests.count()
+
+                # Mark the requests as read
+                # unread_requests.update(is_read=True)
                 messages.success(request, "Login Successfully...!")
-                return render(request, "donor/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
+                return render(request, "donor/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id, 'count' : count})
             else:
                 donor_id = donor.id # type: ignore
-                donors = Donor.objects.get(id = donor_id)
-                donors.delete()
+                # donors = Donor.objects.get(id = donor_id)
+                # donors.delete()
                 messages.error(request, "Account not found please register now...!")
                 return redirect("donorSignup")
         else:
@@ -65,18 +77,29 @@ def send_otp(request):
     password = data.get('password')
     category = data.get('type')
     if category == "donor":
-        donor_phone = Donor.objects.filter(contact = data.get('phone')).first()
-        if donor_phone != None and donor_phone.contact == data.get('phone'):
-            messages.error(request, "Duplicate Contact Number")
+        donor_phone = Donor.objects.filter(contact = data.get('phone'), email = data.get('email'), is_verified = 1).first()
+        if donor_phone != None and donor_phone.contact == data.get('phone') and donor_phone.email == data.get('email') and donor_phone.is_verified == 1:
+            messages.error(request, "Duplicate found...")
             return redirect('donorSignup')
-        
-        donor_email = Donor.objects.filter(email = data.get('email')).first()
-        if donor_email != None and donor_email.email == data.get('email'):
-            messages.error(request, "Duplicate Email")
-            return redirect('donorSignup')
+        donor_phone1 = Donor.objects.filter(contact = data.get('phone'), email = data.get('email'), is_verified = 0).first()
+        if donor_phone1 != None and donor_phone1.contact == data.get('phone') and donor_phone1.email == data.get('email') and donor_phone1.is_verified == 0:
+            # otp =send_otp_to_phone(phone)
+            otp = 111111
+            donor_phone1.name = name
+            donor_phone1.gender = gender
+            donor_phone1.address = address
+            donor_phone1.password = password
+            donor_phone1.otp = otp # type: ignore
+            donor_phone1.save()
+            id = donor_phone1.id # type: ignore
+            messages.success(request, 'OTP sent Successfully...!')
+            return render(request, "donor/otpVerify.html", {"id" : id, "phone" : phone})
+        if Donor.objects.filter(email=email).exists() or Donor.objects.filter(contact=phone).exists():
+            messages.error(request, "Duplicate found....")
+            return redirect('donorSignup')  # Redirect to the donor signup page or any other appropriate page
         
         # otp =send_otp_to_phone(phone)
-        otp = 123456
+        otp = 111111
         donor = Donor(name = name, contact = phone, email = email, gender = gender, address = address, password = password, otp = otp, created_date = formatted_time)
         donor.save()
         id = donor.id # type: ignore
@@ -84,18 +107,29 @@ def send_otp(request):
         messages.success(request, 'OTP sent Successfully...!')
         return render(request, "donor/otpVerify.html", {"id" : id, "phone" : phone})
     else:
-        user_phone = User.objects.filter(contact = data.get('phone')).first()
-        if user_phone != None and user_phone.contact == data.get('phone'):
-            messages.error(request, "Duplicate Contact Number")
+        donor_phone = User.objects.filter(contact = data.get('phone'), email = data.get('email'), is_verified = 1).first()
+        if donor_phone != None and donor_phone.contact == data.get('phone') and donor_phone.email == data.get('email') and donor_phone.is_verified == 1:
+            messages.error(request, "Duplicate found...")
             return redirect('userSignup')
-        
-        user_email = User.objects.filter(email = data.get('email')).first()
-        if user_email != None and user_email.email == data.get('email'):
-            messages.error(request, "Duplicate Email")
-            return redirect('userSignup')
+        donor_phone1 = User.objects.filter(contact = data.get('phone'), email = data.get('email'), is_verified = 0).first()
+        if donor_phone1 != None and donor_phone1.contact == data.get('phone') and donor_phone1.email == data.get('email') and donor_phone1.is_verified == 0:
+            # otp =send_otp_to_phone(phone)
+            otp = 222222
+            donor_phone1.name = name
+            donor_phone1.gender = gender
+            donor_phone1.address = address
+            donor_phone1.password = password
+            donor_phone1.otp = otp # type: ignore
+            donor_phone1.save()
+            id = donor_phone1.id # type: ignore
+            messages.success(request, 'OTP sent Successfully...!')
+            return render(request, "user/otpVerify.html", {"id" : id, "phone" : phone})
+        if User.objects.filter(email=email).exists() or User.objects.filter(contact=phone).exists():
+            messages.error(request, "Duplicate found....")
+            return redirect('userSignup')  # Redirect to the donor signup page or any other appropriate page
         
         # otp =send_otp_to_phone(phone)
-        otp = 654321
+        otp = 222222
         user = User(name = name, contact = phone, email = email, gender = gender, address = address, password = password, otp = otp, created_date = formatted_time)
         user.save()
         id = user.id # type: ignore
@@ -152,24 +186,26 @@ def add_food(request, id):
         name = request.POST['name']
         type = request.POST['type']
         ingredient = request.POST.getlist('ingredients')
-        ingredients = ', '.join(ingredient[:-1])
+        ingredientss = ', '.join(ingredient[:-1])
         if ingredient:  # Check if the list is not empty
-            ingredients += ingredient[-1]  # Append the last element
+            ingredientss += ingredient[-1]  # Append the last element
 
         quantity = request.POST['qty']
+        preparation_time = request.POST['preparation_time']
+        is_del = request.POST.get('is_del', 'No')
         description = request.POST['description']
 
-        food = Food.objects.filter(name = name).first()
-        if food == None:
-            id = request.session['donorid']
-            foods = Food(name = name, type = type, ingredients = ingredients, quantity = quantity, description = description,  image = request.FILES['images'], donor_id = id, created_date = formatted_time)
-            foods.save()
-            foods = Food.objects.filter(is_enabled = 1).all()
-            messages.success(request, "Food added successfully...!")
-            return render(request, "donor/home.html", {"id" : id, "ingredients" : ingredients, "foods" : foods})
-        else:
-            messages.error(request, "Duplicate food name...!")
-            return redirect("donorHome")
+        # food = Food.objects.filter(name = name).first()
+        # if food == None:
+        id = request.session['donorid']
+        foods = Food(name = name, type = type, ingredients = ingredientss, quantity = quantity, prepared_time=preparation_time, is_deliverable= is_del,  description = description,  image = request.FILES['images'], donor_id = id, created_date = formatted_time)
+        foods.save()
+        foods = Food.objects.filter(is_enabled = 1).all()
+        messages.success(request, "Food added successfully...!")
+        return render(request, "donor/home.html", {"id" : id, "ingredients" : ingredients, "foods" : foods})
+        # else:
+        #     messages.error(request, "Duplicate food name...!")
+        #     return redirect("donorHome")
 
     return redirect("index")
 
@@ -199,15 +235,25 @@ def userLogin(request):
                 messages.success(request, "Login Successfully...!")
                 return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
             else:
-                user_id = user.id # type: ignore
-                users = User.objects.get(id = user_id)
-                users.delete()
-                messages.error(request, "Account not found please register now...!")
+                messages.error(request, "Please Verify Account...!")
                 return redirect("userSignup")
         else:
             messages.error(request, "Invalid credentials...!")
             return redirect("userLogin")
     return render(request, "user/login.html")
+
+
+def home(request):
+    if not request.User.is_authenticated:
+        messages.error(request, "Please log in to access the home page.")
+        return redirect("userLogin")
+    
+    # The rest of your home view logic goes here
+
+    foods = Food.objects.filter(is_enabled = 1).all()
+    id = request.session['userid']
+    messages.success(request, "Login Successfully...!")
+    return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
 
 def userSignup(request):
     return render(request, "user/signup.html")
@@ -231,9 +277,29 @@ def ratings(request, category):
         # donor = Donor.objects.filter(id = id).first()
         return render(request, "donor/ratings.html")
     else:
+        if request.method == 'POST':
+            id = request.session['userid']
+            order_id = request.POST['order_id']
+            ratings = request.POST['ratings']
+            description = request.POST['description']
+
+            order= Order.objects.filter(order_id = order_id).first()
+            food_id = int(order.food_id)
+            donor_id = int(order.donor_id)
+
+            rating = Rating(food_id = food_id, donor_id = donor_id, user_id = id, ratings = ratings, description = description, order_id = order_id, created_date = formatted_time)
+            rating.save()
+            orders = Order.objects.filter(order_id = order_id).first()
+            orders.is_rated = 1
+            orders.save()
+            foods = Food.objects.filter(is_enabled = 1).all()
+            messages.success(request, "Rating given success...")
+            return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
+
         id = request.session['userid']
-        user = User.objects.filter(id = id).first()
-        return render(request, "user/ratings.html", {"user" : user})
+        orders = get_Data(id)
+        ratings = get_ratings(id)
+        return render(request, "user/ratings.html", {"orders" : orders, 'ratings' : ratings})
     
 def editProfile(request, id, category):
     name = request.POST['name']
@@ -315,6 +381,8 @@ def get_food_to_edit(request):
                     'name': food.name,
                     'type': food.type,
                     'ingredients': food.ingredients,
+                    'prepared_time' : food.prepared_time,
+                    'is_deliverable' : food.is_deliverable,
                     'quantity': food.quantity,
                     'description': food.description,
                     # 'image': food.image,
@@ -364,6 +432,14 @@ def order_food(request):
 
         order_id = random.randrange(111111, 999999)
 
+        food_qty = Food.objects.filter(id = food_id).first()
+        if quantity > int(food_qty.quantity): # type: ignore
+            id = request.session['userid']
+            foods = Food.objects.filter(is_enabled = 1).all()
+            messages.error(request, "Out of stock... please try again")
+            return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
+
+
         order = Order(order_id =order_id, food_id = food_id, donor_id = donor_id, user_id = user_id, quantity = quantity, address = address, description = description, created_date = formatted_time)
         order.save()
         food = Food.objects.get(id = food_id)
@@ -389,3 +465,55 @@ def view_request(request):
     foods = Food.objects.all()
     users = User.objects.all()
     return render(request, "donor/viewRequest.html", {"orders" : orders, "foods" : foods, "users" : users})
+
+def food_request(request, category):
+    if category == 1:
+        if request.method == 'POST':
+            food_name = request.POST['food_name']
+            type = request.POST['type']
+            user_date = request.POST['req_date']
+            qty = request.POST['qty']
+            desc = request.POST['description']
+            user_id = request.session['userid']
+
+            print(user_date)
+
+            requests = UserRequest(user_id = user_id, food_name = food_name, food_type = type, date = user_date, quantity = qty, description = desc, created_date = formatted_time)
+            requests.save()
+            id = request.session['userid']
+            foods = Food.objects.filter(is_enabled = 1).all()
+            messages.success(request, "Request send successfully...!")
+            return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
+    else:
+         if request.method == 'POST':
+            user_id = request.session['userid']
+
+            requests = UserRequest(user_id = user_id, image = request.FILES['image'], req_type = 2 , created_date = formatted_time)
+            requests.save()
+            id = request.session['userid']
+            foods = Food.objects.filter(is_enabled = 1).all()
+            messages.success(request, "Request send successfully...!")
+            return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
+         
+def request_list(request):
+    foods = get_request_data()
+    moneys = get_request_money()
+    donor_id = request.session['donorid']
+
+    req_objects = UserRequest.objects.all()
+    for req in req_objects:
+        # Split the existing seen_donor field into a list of donor IDs
+        existing_donor_ids = set(map(int, req.seen_donor.split(','))) if req.seen_donor else set()
+
+        # Add the new donor_id if it's not already present
+        if donor_id not in existing_donor_ids:
+            existing_donor_ids.add(donor_id)
+            # Join the updated set of donor IDs and save the changes
+            req.seen_donor = ','.join(map(str, existing_donor_ids))
+            req.save()
+    return render(request, 'donor/requestList.html', {'foods' : foods, 'moneys' : moneys})
+
+
+def send_email_to_donor(request):
+    send_email(request)
+    return redirect('index')

@@ -13,7 +13,7 @@
 </div>
 {% endblock navbar %}
 <div style="margin-top: 80px;">
-    {% include 'base/messages.html' %}
+     
     <div class="container-fluid">
         <div class="my-3">
             <h3 style="color: white;">Food View</h3>
@@ -125,22 +125,32 @@
 
           <!-- Textarea Field -->
           <div class="form-group">
+            <label for="textareaField">Time of Preparation:</label>
+            <input class="form-control" id="preparation_time" placeholder="Time of Preparation" name="preparation_time" required></input>
+          </div>
+
+           <!-- Select Field -->
+           <div class="form-group">
+            <label for="selectField">Is Deliverable</label>
+            <select class="form-control" id="is_del" name="is_del" required>
+              <option value="" selected disabled>Select Type</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+
+          <!-- Textarea Field -->
+          <div class="form-group">
             <label for="textareaField">Description:</label>
             <textarea class="form-control" id="description" placeholder="Description" name="description"
-              rows="3"></textarea>
+              rows="3" required></textarea>
           </div>
-           <!-- File Field -->
-           <div class="form-group">
-            <label for="fileField">Image</label>
-            <img id="foodImage" src="" alt="product_image" height="100px" width="150px" style="border-radius: 20%; border-color: blue;">
-
-          </div>
-
+    
           <!-- File Field -->
           <div class="form-group">
             <label for="fileField">Image</label>
             <input type="file" class="form-control py-2 rounded-0" id="images" name="images" placeholder="Image"
-              accept=".png,.jpg,.jpeg,.webp">
+              accept=".png,.jpg,.jpeg,.webp" required>
           </div>
 
         </div>
@@ -152,4 +162,16 @@
     </div>
   </div>
 </div>
+
+<script>
+  flatpickr("#preparation_time", {
+    enableTime: true,
+    noCalendar: false,  // Allow selecting dates
+    dateFormat: "Y-m-d H:i",  // Adjust the date format to include both date and time
+    time_24hr: true,
+    minuteIncrement: 1,
+    defaultDate: new Date(),  // Set default date to today
+    placeholder: "Select date and time",
+  });
+</script>
 {% endblock content %}

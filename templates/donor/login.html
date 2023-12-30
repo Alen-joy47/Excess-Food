@@ -14,8 +14,8 @@
     
 
 {% block content %}
-<div class="container-fluid" style="margin-top: 80px;">
-  {% include 'base/messages.html' %}
+
+<div class="container-fluid" style="margin-top: 60px;">
   <section class="h-100 gradient-form" style="background-image: linear-gradient(to right top, #d16ba5, #c777b9, #ba83ca, #aa8fd8, #9a9ae1, #8aa7ec, #79b3f4, #69bff8, #52cffe, #41dfff, #46eefa, #5ffbf1);">
     <div class="container py-5 h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
@@ -71,6 +71,13 @@
     </div>
   </section>
 </div>
-    
+<style>
+  .message-container {
+  position: fixed;
+  bottom: 80px; /* Adjust the bottom position as needed */
+  right: 40px; /* Adjust the right position as needed */
+  z-index: 1599; /* Ensure the button is on top of other elements */
+}
+</style>
 {% endblock content %}
     

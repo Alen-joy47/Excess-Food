@@ -29,6 +29,8 @@ function editFood(id) {
       $("#id").val(data.id);
       $("#name").val(data.name);
       $("#type").val(data.type);
+      $("#preparation_time").val(data.prepared_time);
+      $("#is_del").val(data.is_deliverable);
       // $("#ingredients").val(data.ingredients);
       $("#qty").val(data.quantity);
       $("#description").val(data.description);
@@ -57,4 +59,8 @@ function editFood(id) {
   function orderNow() {
     $("#heading").text("Order Food");
     $("#orderFoodModal").modal("show");
+  }
+
+  function requestNow() {
+    $("#requestModal").modal("show");
   }

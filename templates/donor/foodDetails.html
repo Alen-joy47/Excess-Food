@@ -35,6 +35,12 @@
                       <p class="text-white bg-danger rounded text-center w-25" >{{ food.type }}</p>
                       {% endif %}
 
+                      <h5>Time of preparation : </h5>
+                      <p style="font-size: 18px;">{{ food.prepared_time }}</p>
+
+                      <h5>Delivery Facility available: </h5>
+                      <p style="font-size: 18px;"><b>{{ food.is_deliverable }}</b></p>
+
                       <h5>Food Quantity : </h5>
                       <p><b>{{ food.quantity }}</b></p>
     
@@ -44,11 +50,10 @@
                       <h5>Food Description : </h5>
                       <p>{{ food.description }}.</p>
     
-                      <div class="text-center">
-                        <a href="" class="mx-3"><button class="btn btn-warning">Test Food</button></a>
-                        <a href="" class="mx-3"> <button class="btn btn-primary">Buy Food</button></a>
-                        
-                      </div>
+                      <!-- <div class="text-center"> -->
+                        <!-- <a href="" class="mx-3"><button class="btn btn-warning">Test Food</button></a>
+                        <a href="" class="mx-3"> <button class="btn btn-primary">Buy Food</button></a> -->
+                      <!-- </div> -->
       
                     </div>
                   </div>

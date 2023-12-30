@@ -35,6 +35,12 @@
                       {% else %}
                       <p class="text-white bg-danger rounded text-center w-25" >{{ food.type }}</p>
                       {% endif %}
+
+                      <h5>Time of preparation : </h5>
+                      <p style="font-size: 18px;">{{ food.prepared_time }}</p>
+
+                      <h5>Delivery Facility available: </h5>
+                      <p style="font-size: 18px;"><b>{{ food.is_deliverable }}</b></p>
     
                       <h5>Ingredients added : </h5>
                       <p>{{ food.ingredients }}.</p>
@@ -108,7 +114,7 @@
           </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Save changes</button>
+          <button type="submit" class="btn btn-primary">Order Now</button>
         </div>
       </form>
     </div>
