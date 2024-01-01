@@ -14,49 +14,70 @@
 </div>
 {% endblock navbar %}
 <div style="margin-top: 80px;">
-     
-    <div class="container-fluid">
-        <div class="my-3">
-            <h3 style="color: white;">Food Request List</h3>
-        </div>
-        <table class="table table-border table-bordered text-center shadow h-100vh bg-white" style="border-radius: 20px;">
-            <thead>
-                <th>#</th>
-                <th>User Name</th>
-                <th>Contact No</th>
-                <th>Food Name</th>
-                <th>Food Type</th>
-                <th>Quantity</th>
-                <th>Date</th>
-                <th>Description</th>
-            </thead>
-            <tbody>
-                {% for food in foods %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td class="text-nowrap text-center">{{food.user_name}}</td>
-                    <td class="text-nowrap">{{ food.contact }}</td>
-                    <td class="text-nowrap">{{ food.food_name }}</td>
-                    <td class="text-nowrap">{{ food.food_type }}</td>
-                    <td class="text-nowrap">{{ food.quantity }}</td>
-                    <td class="text-nowrap">{{ food.date }}</td>
-                    <td class="text-nowrap">{{ food.description|wordwrap:50|linebreaksbr }}</td>
-                </tr>
-                {% empty %}
+
+  <div class="container-fluid">
+    <div class="my-3">
+        <h3 style="color: white;">Food Request List</h3>
+    </div>
+  <table>
+    <thead>
+      <tr class="text-center">
+        <th>No</th>
+        <th>Details</th>
+        <th>    </th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for food in foods %}
+      <tr>
+        <td class="text-center">{{ forloop.counter }}</td>
+        <td>
+          <table class="nested-table">
+            <tr>
+              <th class="vertical-heading" style="width: 200px;">User Name: </th>
+              <td class="nested-td">{{food.user_name}}</td>
+            </tr>
+            <tr>
+              <th class="vertical-heading">Contact :</th>
+                <td class="nested-td text-nowrap">{{food.contact}}</td>
+            </tr>
+            <tr>
+              <th class="vertical-heading">Food Type :</th>
+                <td class="nested-td text-nowrap">{{food.food_type}}</td>
+            </tr>
+            <tr>
+              <th class="vertical-heading">Description :</th>
+                <td class="nested-td text-nowrap">{{ food.description|wordwrap:40|linebreaksbr }}</td>
+            </tr>
+          </table>
+          <td>
+            <table class="nested-table">
+              <tr>
+                <th class="vertical-heading" style="width: 200px;">Food Name: </th>
+                <td class="nested-td">{{food.food_name}}</td>
+              </tr>
+              <tr>
+                <th class="vertical-heading">Food Quantity :</th>
+                  <td class="nested-td text-nowrap">{{food.quantity}}</td>
+              </tr>
+              <tr>
+                <th class="vertical-heading">Required Date :</th>
+                  <td class="nested-td text-nowrap">{{food.date}}</td>
+              </tr>
+            </table>
+          </td>
+         </td>
+      </tr>
+      {% empty %}
                 <tr>
                   <td></td>
-                  <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
                   <td> <h2 class="text-danger">No data found...!</h2></td>
                   <td></td>
-                  <td></td>
                 </tr>
-                {% endfor%}
-            </tbody>
-        </table>
-    </div>
+      {% endfor%}
+    </tbody>
+  </table>
+</div>
 </div>
 
 <div class="container-fluid">
@@ -87,7 +108,7 @@
             </tr>
             <!-- Add more rows as needed -->
           </table>
-          <td><img src="/media/{{ money.image }}" alt="QR_image" height="100px" width="150px" style="border-radius: 20%; border-color: blue;"></td>
+          <td class="text-align-center"><img src="/media/{{ money.image }}" alt="QR_image" height="100px" width="150px" style="border-radius: 20%; border-color: blue;"></td>
         </td>
       </tr>
       <!-- Add more rows as needed -->

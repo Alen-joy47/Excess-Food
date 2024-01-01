@@ -1,3 +1,4 @@
+from ast import Not
 from email import message
 from email.mime import image
 from random import random
@@ -214,13 +215,23 @@ def donorHome(request):
     foods = Food.objects.filter(is_enabled = 1).all()
     return render(request, "donor/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
 
-def get_food(request, id, category):
+def get_food(request, id, donor_id, category):
     if category == 0:
         food = Food.objects.filter(id = id).first()
-        return render(request, "donor/foodDetails.html", {"food" : food})
+        ratings = get_ratings(donor_id)
+        if not ratings:
+            rating = 0
+        else:
+            rating = ratings[0]['rating']
+        return render(request, "donor/foodDetails.html", {"food" : food, 'rating' : rating})
     else:
         food = Food.objects.filter(id = id).first()
-        return render(request, "user/foodDetails.html", {"food" : food})
+        ratings = get_ratings(donor_id)
+        if not ratings:
+            rating = 0
+        else:
+            rating = ratings[0]['rating']
+        return render(request, "user/foodDetails.html", {"food" : food, 'rating' : rating})
    
 def userLogin(request):
     if request.method == "POST":
@@ -307,7 +318,6 @@ def editProfile(request, id, category):
     email = request.POST['email']
     gender = request.POST['gender']
     address = request.POST['address']
-    print(name, email, gender, address, phone)
     if category == 0:
         donors = Donor.objects.get(id = id)
         if donors != None : 
@@ -401,6 +411,7 @@ def update_food(request):
         name = request.POST['name']
         type = request.POST['type']
         ingredient = request.POST.getlist('ingredients')
+        is_del = request.POST.get('is_del', 'No')
         ingredients = ', '.join(ingredient[:-1])
         if ingredient:  # Check if the list is not empty
             ingredients += ingredient[-1]  # Append the last element
@@ -413,6 +424,7 @@ def update_food(request):
         food.ingredients = ingredients
         food.quantity = quantity
         food.description = description
+        food.is_deliverable = is_del
         food.image = request.FILES['images']
         food.updated_date = formatted_time # type: ignore
         food.save()
@@ -460,7 +472,6 @@ def view_history(request):
 
 def view_request(request):
     id = request.session['donorid']
-    print(id)
     orders = Order.objects.filter(donor_id = id).all()
     foods = Food.objects.all()
     users = User.objects.all()
@@ -475,8 +486,6 @@ def food_request(request, category):
             qty = request.POST['qty']
             desc = request.POST['description']
             user_id = request.session['userid']
-
-            print(user_date)
 
             requests = UserRequest(user_id = user_id, food_name = food_name, food_type = type, date = user_date, quantity = qty, description = desc, created_date = formatted_time)
             requests.save()

@@ -14,11 +14,12 @@
 {% endblock navbar %}
 <div style="margin-top: 80px;">
      
-    <div class="container-fluid">
-        <div class="my-3">
-            <h3 style="color: white;">Food View</h3>
-        </div>
-        <table class="table table-border table-bordered text-center shadow h-100vh bg-white" style="border-radius: 20px;">
+  <div class="container-fluid">
+    <div class="my-3">
+        <h3 style="color: white;">Food View</h3>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered text-center shadow bg-white" style="border-radius: 20px;">
             <thead>
                 <th>#</th>
                 <th>Image</th>
@@ -35,8 +36,8 @@
                 {% for food in foods %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td><img src="{{ food.image.url }}" alt="product_image" height="100px" width="150px" style="border-radius: 20%; border-color: blue;"></td>
-                    <td class="text-nowrap text-center  ">{{food.name}}</td>
+                    <td><img src="{{ food.image.url }}" alt="product_image" class="img-fluid" style="max-height: 100px; max-width: 150px; border-radius: 20%; border-color: blue;"></td>
+                    <td class="text-nowrap text-center">{{ food.name }}</td>
                     {% if food.type == "Pure Veg" %}
                     <td><b class="text-success text-nowrap">{{ food.type }}</b></td>
                     {% else %}
@@ -60,19 +61,16 @@
                 </tr>
                 {% empty %}
                 <tr>
-                  <td></td>
-                  <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                  <td> <h2 class="text-danger">No data found...!</h2></td>
-                  <td></td>
-                  <td></td>
+                    <td colspan="10">
+                        <h2 class="text-danger">No data found...!</h2>
+                    </td>
                 </tr>
-                {% endfor%}
+                {% endfor %}
             </tbody>
         </table>
     </div>
+</div>
+
 </div>
 
 <!-- Modal -->
@@ -129,16 +127,6 @@
             <input class="form-control" id="preparation_time" placeholder="Time of Preparation" name="preparation_time" required></input>
           </div>
 
-           <!-- Select Field -->
-           <div class="form-group">
-            <label for="selectField">Is Deliverable</label>
-            <select class="form-control" id="is_del" name="is_del" required>
-              <option value="" selected disabled>Select Type</option>
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-            </select>
-          </div>
-
           <!-- Textarea Field -->
           <div class="form-group">
             <label for="textareaField">Description:</label>
@@ -152,6 +140,14 @@
             <input type="file" class="form-control py-2 rounded-0" id="images" name="images" placeholder="Image"
               accept=".png,.jpg,.jpeg,.webp" required>
           </div>
+
+            <!-- Checkbox Field with default value "No" -->
+        <div class="form-group">
+          <div class="form-check float-right">
+            <label class="form-check-label mr-5" for="is_del">Is Deliverable</label>
+              <input class="form-check-input" type="checkbox" id="is_del" name="is_del" value="Yes">
+          </div>
+        </div>
 
         </div>
         <div class="modal-footer">

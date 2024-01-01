@@ -29,70 +29,34 @@ def send_otp_to_phone(phone):
 
 def send_email(request):
     if request.method == 'GET':
-        user_req = UserRequest.objects.all()
-        if user_req is not None:
-            for user in user_req:
-                # date1 = user.date
-                # date2 =  datetime.now()
-                # print(user.date)
+        user_req = UserRequest.objects.filter(req_type = 1).all()
+        current_date = datetime.now()
 
-                # temp_date = user.date
-                print("user-data:- ",user.date)
-                print(type(user.date))
+        for user in user_req:
+            # print(type(user.date))
+            user_date = user.date.replace(tzinfo=None)  # Assuming user.date is already an aware datetime
+            current_date = current_date.replace(tzinfo=None)
 
-                current_date = datetime.now()
-                print("user-current_date:- ",current_date)
-                print(type(current_date))
+            if user_date > current_date:
+                food_name = user.food_name
+                donor_queryset = Donor.objects.all()
 
-                # Assuming your datetime object is named 'your_datetime_object'
-                # your_datetime_object = datetime(2024, 1, 4, 15, 1, tzinfo=timezone.utc)
+                # Using list comprehension to create a list of email addresses
+                email_list = [donor.email for donor in donor_queryset]
+                subject = "Reminder Notification on Excess Food"
+                message = message =  f'''This is a friendly reminder that the user request for {food_name} has been noted, and it is scheduled for {user_date}.
 
-                # Convert to a specific timezone if needed (e.g., 'Asia/Kolkata')
-                temp =user.date
-                # local_timezone = timezone(timedelta(hours=5, minutes=30))  # UTC+5:30 for 'Asia/Kolkata'
-                # your_datetime_object_local = temp.astimezone(local_timezone)
+We look forward to serving you on {user_date}.
 
-                # # Extract the date
-                # date_only = your_datetime_object_local.date()
-                # date_only = datetime.strptime(str(temp), "%Y-%m-%d")
-                # formatted_date = datetime.strptime(str(temp), "%Y-%m-%d %H:%M:%S.%f")
-                # print("temp formatted_date:- ",temp.date())
-                # print(type(temp.date()))
-                # if temp > current_date:
+If you have any special preferences or additional requests, feel free to let us know.
+
+For more details please login to your account..
+
+Thanks,
+Excess Food Community.'''
+                from_email = settings.EMAIL_HOST_USER
+                to_email = email_list
+                send_mail(subject, message, from_email, to_email)
+                print("Email sent successfully...")
 
     return HttpResponse("hello")
-
-
-
-       
-        # # print(date_time_obj)
-
-
-        # # Convert to string with a specific format
-        # # date_str1 = obj_date_time.strftime('%Y-%m-%d')
-        # current_date = datetime.strptime(str(date_time_obj),'%Y-%m-%d')
-        
-        # # Convert string dates to datetime objects
-        # # date1 = datetime.strptime(date_str1, "%Y-%m-%d")
-        # userDate = datetime.strptime(str(temp_date), "%Y-%m-%d")
-        
-        # # Compare the dates
-        # if userDate > current_date:
-        #     food_date = user.date
-        #     food_name = user.food_name
-        #     donor_queryset = Donor.objects.all()
-
-        #     # Using list comprehension to create a list of email addresses
-        #     email_list = [donor.email for donor in donor_queryset]
-        #     subject = "Reminder Notification on Excess Food"
-        #     message = f'''
-        #                 This is a friendly reminder that your request for {food_name} has been noted, and it is scheduled for {food_date}. 
-        #                 We look forward to serving you on {food_date}. 
-        #                 If you have any special preferences or additional requests, feel free to let us know.
-        #                 For more details please check your account.
-        #             '''
-        #     from_email = settings.EMAIL_HOST_USER
-        #     to_email = email_list
-        #     send_mail(subject, message, from_email, to_email)
-        #     print("Email sent...")
-        #     return

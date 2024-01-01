@@ -1,4 +1,5 @@
 from django.db import connection
+
 def get_Data(user_id):
     raw_query = """
         SELECT orders.order_id, orders.food_id, foods.donor_id, foods.name, orders.user_id FROM orders 
@@ -49,8 +50,6 @@ WHERE requests.req_type = 1
     # Convert the results to a list of dictionaries
     columns = [col[0] for col in cursor.description]
     data = [dict(zip(columns, row)) for row in results]
-
-    print(data)
  
     return data
 
@@ -68,7 +67,32 @@ WHERE requests.req_type = 2
     # Convert the results to a list of dictionaries
     columns = [col[0] for col in cursor.description]
     data = [dict(zip(columns, row)) for row in results]
-
-    print(data)
  
+    return data
+
+def get_ratings(donor_id):
+    print(donor_id)
+    raw_query = """
+        SELECT ROUND(AVG(ratings.ratings), 1) AS rating, donors.name AS donor_name, donors.id
+        FROM ratings
+        JOIN foods ON foods.id = ratings.food_id
+        JOIN donors ON donors.id = foods.donor_id
+        WHERE donors.id = %s
+        GROUP BY donors.id, donors.name;
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(raw_query, [donor_id])
+        results = cursor.fetchall()
+
+    # Convert the results to a list of dictionaries
+    columns = [col[0] for col in cursor.description]
+    data = [dict(zip(columns, row)) for row in results]
+
+    # if not data:
+    #     return None  # or return a specific value, or raise an exception
+
+    # rating = data[0]['rating']
+    # print(rating)
+
     return data
