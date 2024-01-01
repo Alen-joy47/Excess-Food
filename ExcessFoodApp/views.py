@@ -292,17 +292,19 @@ def ratings(request, category):
             description = request.POST['description']
 
             order= Order.objects.filter(order_id = order_id).first()
-            food_id = int(order.food_id)
-            donor_id = int(order.donor_id)
+            if order != None:
+                food_id = int(order.food_id)
+                donor_id = int(order.donor_id)
 
-            rating = Rating(food_id = food_id, donor_id = donor_id, user_id = id, ratings = ratings, description = description, order_id = order_id, created_date = formatted_time)
-            rating.save()
-            orders = Order.objects.filter(order_id = order_id).first()
-            orders.is_rated = 1
-            orders.save()
-            foods = Food.objects.filter(is_enabled = 1).all()
-            messages.success(request, "Rating given success...")
-            return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
+                rating = Rating(food_id = food_id, donor_id = donor_id, user_id = id, ratings = ratings, description = description, order_id = order_id, created_date = formatted_time)
+                rating.save()
+                orders = Order.objects.filter(order_id = order_id).first()
+                if orders != None:
+                    orders.is_rated = 1
+                    orders.save()
+                    foods = Food.objects.filter(is_enabled = 1).all()
+                    messages.success(request, "Rating given success...")
+                    return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
 
         id = request.session['userid']
         orders = get_Data(id)
