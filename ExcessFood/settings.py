@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'ExcessFoodApp.middleware.CheckSessionMiddleware',
 ]
 
 ROOT_URLCONF = 'ExcessFood.urls'
@@ -157,5 +158,3 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "vinay.agiletec@gmail.com"
 EMAIL_HOST_PASSWORD = 'twvfkoilmndvnevn'
-
-

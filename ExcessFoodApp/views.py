@@ -1,20 +1,15 @@
-from ast import Not
-from email import message
-from email.mime import image
 from random import random
-from urllib.request import Request
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
+from requests import request
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
 from ExcessFoodApp.rawQuery import *
 from .helpers import *
 from .models import *
 from django.contrib import messages
 from django.core.serializers.json import DjangoJSONEncoder
 import random
-import time
+from django.urls import reverse
 
 
 utc_now = timezone.now()
@@ -40,6 +35,7 @@ def donorLogin(request):
         if donor != None:
             if donor.is_verified == 1:
                 request.session['donorid'] = donor.id # type: ignore
+                request.session['is_authenticated'] = True
                 foods = Food.objects.filter(is_enabled = 1).all()
                 id = request.session['donorid']
 
@@ -176,8 +172,9 @@ def verify_otp(request, id):
             return render(request, "user/otpVerify.html", {"id" : id, "phone" : phone})
 
 def logout_all(request):
+    request.session.flush()
     messages.success(request, "Logout Successfully...!")
-    return redirect("index")
+    return redirect(reverse('index')) 
 
 def add_food(request, id):
     if id == 0:
@@ -232,7 +229,8 @@ def get_food(request, id, donor_id, category):
         else:
             rating = ratings[0]['rating']
         return render(request, "user/foodDetails.html", {"food" : food, 'rating' : rating})
-   
+    
+
 def userLogin(request):
     if request.method == "POST":
         phone = request.POST['phone']
@@ -244,7 +242,7 @@ def userLogin(request):
                 foods = Food.objects.filter(is_enabled = 1).all()
                 id = request.session['userid']
                 messages.success(request, "Login Successfully...!")
-                return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
+                return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id, 'request' : request})
             else:
                 messages.error(request, "Please Verify Account...!")
                 return redirect("userSignup")
@@ -252,7 +250,6 @@ def userLogin(request):
             messages.error(request, "Invalid credentials...!")
             return redirect("userLogin")
     return render(request, "user/login.html")
-
 
 def home(request):
     if not request.User.is_authenticated:

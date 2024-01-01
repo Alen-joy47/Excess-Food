@@ -1,4 +1,4 @@
-# import requests
+import requests
 import random
 from django.conf import settings
 from django.core.mail import send_mail
@@ -8,20 +8,11 @@ from django.utils import timezone
 # from datetime import datetime
 from datetime import datetime, timedelta, timezone
 
-
-# utc_now = timezone.now()
-
-# # Convert UTC time to Indian Standard Time (IST)
-# ist_now = utc_now.astimezone(timezone.get_fixed_timezone(330))  # UTC+5:30 for Indian Standard Time
-
-# # Format the datetime as a string if needed
-# formatted_time = ist_now.strftime('%Y-%m-%d %H:%M:%S')
-
 def send_otp_to_phone(phone):
     try:
         otp = random.randint(111111, 999999)
         url = f'https://2factor.in/API/V1/{settings.API_KEY}/SMS/+91{phone}/{otp}/OTP1'
-        # response = requests.get(url)
+        response = requests.get(url)
         return otp
     except Exception as e:
         return None
@@ -60,3 +51,6 @@ Excess Food Community.'''
                 print("Email sent successfully...")
 
     return HttpResponse("hello")
+
+
+
