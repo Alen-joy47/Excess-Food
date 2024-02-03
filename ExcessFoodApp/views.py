@@ -1,7 +1,6 @@
 from random import random
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from requests import request
 from rest_framework.decorators import api_view
 from ExcessFoodApp.rawQuery import *
 from .helpers import *
@@ -9,7 +8,8 @@ from .models import *
 from django.contrib import messages
 from django.core.serializers.json import DjangoJSONEncoder
 import random
-from django.urls import reverse
+from django.contrib.auth import logout
+from django.views.decorators.cache import cache_control
 
 
 utc_now = timezone.now()
@@ -35,24 +35,11 @@ def donorLogin(request):
         if donor != None:
             if donor.is_verified == 1:
                 request.session['donorid'] = donor.id # type: ignore
-                request.session['is_authenticated'] = True
                 foods = Food.objects.filter(is_enabled = 1).all()
-                id = request.session['donorid']
-
-                # Display the list of unread requests
-                unread_requests = UserRequest.objects.filter(is_read=False).exclude(seen_donor__contains=str(id))
-                
-                # Get and reset the unread request count
-                count = unread_requests.count()
-
-                # Mark the requests as read
-                # unread_requests.update(is_read=True)
+                id = request.session.get('donorid')
                 messages.success(request, "Login Successfully...!")
-                return render(request, "donor/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id, 'count' : count})
+                return redirect("donorHome")
             else:
-                donor_id = donor.id # type: ignore
-                # donors = Donor.objects.get(id = donor_id)
-                # donors.delete()
                 messages.error(request, "Account not found please register now...!")
                 return redirect("donorSignup")
         else:
@@ -72,68 +59,75 @@ def send_otp(request):
     gender = data.get('gender')
     address = data.get('address')
     password = data.get('password')
+    repassword = data.get('repassword')
     category = data.get('type')
-    if category == "donor":
-        donor_phone = Donor.objects.filter(contact = data.get('phone'), email = data.get('email'), is_verified = 1).first()
-        if donor_phone != None and donor_phone.contact == data.get('phone') and donor_phone.email == data.get('email') and donor_phone.is_verified == 1:
-            messages.error(request, "Duplicate found...")
-            return redirect('donorSignup')
-        donor_phone1 = Donor.objects.filter(contact = data.get('phone'), email = data.get('email'), is_verified = 0).first()
-        if donor_phone1 != None and donor_phone1.contact == data.get('phone') and donor_phone1.email == data.get('email') and donor_phone1.is_verified == 0:
+    if password == repassword:
+        if category == "donor":
+            donor_phone = Donor.objects.filter(contact = data.get('phone'), email = data.get('email'), is_verified = 1).first()
+            if donor_phone != None and donor_phone.contact == data.get('phone') and donor_phone.email == data.get('email') and donor_phone.is_verified == 1:
+                messages.error(request, "Duplicate found...")
+                return redirect('donorSignup')
+            donor_phone1 = Donor.objects.filter(contact = data.get('phone'), email = data.get('email'), is_verified = 0).first()
+            if donor_phone1 != None and donor_phone1.contact == data.get('phone') and donor_phone1.email == data.get('email') and donor_phone1.is_verified == 0:
+                # otp =send_otp_to_phone(phone)
+                otp = 111111
+                donor_phone1.name = name
+                donor_phone1.gender = gender
+                donor_phone1.address = address
+                donor_phone1.password = password
+                donor_phone1.otp = otp # type: ignore
+                donor_phone1.save()
+                id = donor_phone1.id # type: ignore
+                messages.success(request, 'OTP sent Successfully...!')
+                return render(request, "donor/otpVerify.html", {"id" : id, "phone" : phone})
+            if Donor.objects.filter(email=email).exists() or Donor.objects.filter(contact=phone).exists():
+                messages.error(request, "Duplicate found....")
+                return redirect('donorSignup')  # Redirect to the donor signup page or any other appropriate page
+            
             # otp =send_otp_to_phone(phone)
             otp = 111111
-            donor_phone1.name = name
-            donor_phone1.gender = gender
-            donor_phone1.address = address
-            donor_phone1.password = password
-            donor_phone1.otp = otp # type: ignore
-            donor_phone1.save()
-            id = donor_phone1.id # type: ignore
+            donor = Donor(name = name, contact = phone, email = email, gender = gender, address = address, password = password, otp = otp, created_date = formatted_time)
+            donor.save()
+            id = donor.id # type: ignore
+            phone = donor.contact
             messages.success(request, 'OTP sent Successfully...!')
             return render(request, "donor/otpVerify.html", {"id" : id, "phone" : phone})
-        if Donor.objects.filter(email=email).exists() or Donor.objects.filter(contact=phone).exists():
-            messages.error(request, "Duplicate found....")
-            return redirect('donorSignup')  # Redirect to the donor signup page or any other appropriate page
-        
-        # otp =send_otp_to_phone(phone)
-        otp = 111111
-        donor = Donor(name = name, contact = phone, email = email, gender = gender, address = address, password = password, otp = otp, created_date = formatted_time)
-        donor.save()
-        id = donor.id # type: ignore
-        phone = donor.contact
-        messages.success(request, 'OTP sent Successfully...!')
-        return render(request, "donor/otpVerify.html", {"id" : id, "phone" : phone})
-    else:
-        donor_phone = User.objects.filter(contact = data.get('phone'), email = data.get('email'), is_verified = 1).first()
-        if donor_phone != None and donor_phone.contact == data.get('phone') and donor_phone.email == data.get('email') and donor_phone.is_verified == 1:
-            messages.error(request, "Duplicate found...")
-            return redirect('userSignup')
-        donor_phone1 = User.objects.filter(contact = data.get('phone'), email = data.get('email'), is_verified = 0).first()
-        if donor_phone1 != None and donor_phone1.contact == data.get('phone') and donor_phone1.email == data.get('email') and donor_phone1.is_verified == 0:
+        else:
+            donor_phone = User.objects.filter(contact = data.get('phone'), email = data.get('email'), is_verified = 1).first()
+            if donor_phone != None and donor_phone.contact == data.get('phone') and donor_phone.email == data.get('email') and donor_phone.is_verified == 1:
+                messages.error(request, "Duplicate found...")
+                return redirect('userSignup')
+            donor_phone1 = User.objects.filter(contact = data.get('phone'), email = data.get('email'), is_verified = 0).first()
+            if donor_phone1 != None and donor_phone1.contact == data.get('phone') and donor_phone1.email == data.get('email') and donor_phone1.is_verified == 0:
+                # otp =send_otp_to_phone(phone)
+                otp = 222222
+                donor_phone1.name = name
+                donor_phone1.gender = gender
+                donor_phone1.address = address
+                donor_phone1.password = password
+                donor_phone1.otp = otp # type: ignore
+                donor_phone1.save()
+                id = donor_phone1.id # type: ignore
+                messages.success(request, 'OTP sent Successfully...!')
+                return render(request, "user/otpVerify.html", {"id" : id, "phone" : phone})
+            if User.objects.filter(email=email).exists() or User.objects.filter(contact=phone).exists():
+                messages.error(request, "Duplicate found....")
+                return redirect('userSignup')  # Redirect to the donor signup page or any other appropriate page
+            
             # otp =send_otp_to_phone(phone)
             otp = 222222
-            donor_phone1.name = name
-            donor_phone1.gender = gender
-            donor_phone1.address = address
-            donor_phone1.password = password
-            donor_phone1.otp = otp # type: ignore
-            donor_phone1.save()
-            id = donor_phone1.id # type: ignore
+            user = User(name = name, contact = phone, email = email, gender = gender, address = address, password = password, otp = otp, created_date = formatted_time)
+            user.save()
+            id = user.id # type: ignore
+            phone = user.contact
             messages.success(request, 'OTP sent Successfully...!')
             return render(request, "user/otpVerify.html", {"id" : id, "phone" : phone})
-        if User.objects.filter(email=email).exists() or User.objects.filter(contact=phone).exists():
-            messages.error(request, "Duplicate found....")
-            return redirect('userSignup')  # Redirect to the donor signup page or any other appropriate page
-        
-        # otp =send_otp_to_phone(phone)
-        otp = 222222
-        user = User(name = name, contact = phone, email = email, gender = gender, address = address, password = password, otp = otp, created_date = formatted_time)
-        user.save()
-        id = user.id # type: ignore
-        phone = user.contact
-        messages.success(request, 'OTP sent Successfully...!')
-        return render(request, "user/otpVerify.html", {"id" : id, "phone" : phone})
-    
+    else:
+        messages.error(request, "Password does not match...")
+        return redirect('index') 
+            
+
+
 @api_view(['POST'])
 def verify_otp(request, id):
     data = request.data
@@ -171,10 +165,21 @@ def verify_otp(request, id):
             messages.error(request, "Invalid otp")
             return render(request, "user/otpVerify.html", {"id" : id, "phone" : phone})
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def logout_all(request):
+    # Clear session data
     request.session.flush()
+    # Log the user out
+    logout(request)
+    # Redirect to index page
+    response = redirect('index')  
+
+    # Clear session cookies on the client-side
+    response.delete_cookie('sessionid')
+
     messages.success(request, "Logout Successfully...!")
-    return redirect(reverse('index')) 
+    return response
+    # return redirect(reverse('index')) 
 
 def add_food(request, id):
     if id == 0:
@@ -208,9 +213,21 @@ def add_food(request, id):
     return redirect("index")
 
 def donorHome(request):
-    id = request.session['donorid']
-    foods = Food.objects.filter(is_enabled = 1).all()
-    return render(request, "donor/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
+    if 'donorid' in request.session:
+        id = request.session['donorid']
+    else:
+        id = 0
+    if id == 0:
+        return redirect("donorLogin")
+    else:
+        #Display the list of unread requests
+        unread_requests = UserRequest.objects.filter(is_read=False).exclude(seen_donor__contains=str(id))
+        
+        # Get and reset the unread request count
+        count = unread_requests.count()
+
+        foods = Food.objects.filter(is_enabled = 1).all()
+        return render(request, "donor/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id, 'count' : count})
 
 def get_food(request, id, donor_id, category):
     if category == 0:
@@ -239,10 +256,8 @@ def userLogin(request):
         if user != None:
             if user.is_verified == 1:
                 request.session['userid'] = user.id # type: ignore
-                foods = Food.objects.filter(is_enabled = 1).all()
-                id = request.session['userid']
                 messages.success(request, "Login Successfully...!")
-                return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id, 'request' : request})
+                return redirect("userHome")
             else:
                 messages.error(request, "Please Verify Account...!")
                 return redirect("userSignup")
@@ -251,25 +266,19 @@ def userLogin(request):
             return redirect("userLogin")
     return render(request, "user/login.html")
 
-def home(request):
-    if not request.User.is_authenticated:
-        messages.error(request, "Please log in to access the home page.")
-        return redirect("userLogin")
-    
-    # The rest of your home view logic goes here
-
-    foods = Food.objects.filter(is_enabled = 1).all()
-    id = request.session['userid']
-    messages.success(request, "Login Successfully...!")
-    return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
-
 def userSignup(request):
     return render(request, "user/signup.html")
 
 def userHome(request):
-    id = request.session['userid']
-    foods = Food.objects.filter(is_enabled = 1).all()
-    return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
+    if 'userid' in request.session:
+        id = request.session['userid']
+    else:
+        id = 0
+    if id == 0:
+        return redirect("userLogin")
+    else:
+        foods = Food.objects.filter(is_enabled = 1).all()
+        return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
 
 
 def profile(request, id, category):
@@ -488,6 +497,7 @@ def food_request(request, category):
 
             requests = UserRequest(user_id = user_id, food_name = food_name, food_type = type, date = user_date, quantity = qty, description = desc, created_date = formatted_time)
             requests.save()
+            send_email_new_request(request)
             id = request.session['userid']
             foods = Food.objects.filter(is_enabled = 1).all()
             messages.success(request, "Request send successfully...!")
@@ -498,6 +508,7 @@ def food_request(request, category):
 
             requests = UserRequest(user_id = user_id, image = request.FILES['image'], req_type = 2 , created_date = formatted_time)
             requests.save()
+            send_email_new_request(request)
             id = request.session['userid']
             foods = Food.objects.filter(is_enabled = 1).all()
             messages.success(request, "Request send successfully...!")

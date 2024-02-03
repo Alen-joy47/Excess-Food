@@ -30,7 +30,7 @@
                       style="width: 85px; border-radius: 50%;" alt="logo" height="85px">
                     <h5 class="mt-3 mb-5 pb-1">We are The Excess Food Team</h4>
                   </div>
-                  <form action="/loginDonor/" method="post" id="myform1">
+                  <form action="/loginDonor/" method="post" id="donorLogin">
                     {% csrf_token %}
                     <div class="form-outline mb-4">
                       <label class="form-label" for="form2Example11">Phone Number</label>
@@ -43,9 +43,11 @@
                       <input type="password" placeholder="Password" id="password" name="password" class="form-control" />
                       <h6 id="passwordcheck"></h6>
                     </div>
+
+                    <div class="error text-danger font-weight-bold text-center my-4"></div>
   
                     <div class="text-center pt-1 mb-5 pb-1">
-                      <button class="btn btn-primary btn-block mb-3" name="loginSubmit" id="loginSubmit" type="submit">Login</button>
+                      <button class="btn btn-primary btn-block mb-3" type="submit">Login</button>
                       <!-- <a class="text-muted" href="#!">Forgot password?</a> -->
                     </div>
   

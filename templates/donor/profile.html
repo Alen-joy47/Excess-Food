@@ -113,7 +113,7 @@
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form action="/editProfile/{{donor.id}}/0" method="post" enctype="multipart/form-data">
+                <form id="editProfile" action="/editProfile/{{donor.id}}/0" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="modal-header">
                         <h5 class="modal-title text-primary" id="heading">Edit Profile</h5>
@@ -127,7 +127,7 @@
                         <div class="form-group">
                             <label for="textInput">Name</label>
                             <input type="text" class="form-control" id="name" name="name" placeholder="Enter name"
-                                value="{{donor.name}}" required>
+                                value="{{donor.name}}" >
                         </div>
 
                         <!-- Input Text Field -->
@@ -141,13 +141,13 @@
                         <div class="form-group">
                             <label for="textInput">Email</label>
                             <input type="text" class="form-control" id="email" name="email" placeholder="Enter name"
-                                value="{{donor.email}}" required>
+                                value="{{donor.email}}" >
                         </div>
 
                         <!-- Select Field -->
                         <div class="form-group">
                             <label for="selectField">Gender</label>
-                            <select class="form-control" id="gender" name="gender" required>
+                            <select class="form-control" id="gender" name="gender" >
                                 <option value="{{ donor.gender }}" selected >Select Gender</option>
                                 <option value="1">Male</option>
                                 <option value="2">Female</option>
@@ -162,6 +162,8 @@
                                 rows="3">{{ donor.address }}</textarea>
                         </div>
                     </div>
+
+                    <div class="error text-danger font-weight-bold text-center"></div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Update Profile</button>

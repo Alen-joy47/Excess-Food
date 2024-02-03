@@ -78,7 +78,7 @@
   aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <form action="/updateFood/" method="post" enctype="multipart/form-data">
+      <form id="addFoodForm" action="/updateFood/" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="modal-header">
           <h5 class="modal-title text-primary" id="heading">Edit Food</h5>
@@ -92,14 +92,14 @@
           <!-- Input Text Field -->
           <div class="form-group">
             <label for="textInput">Food Name</label>
-            <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" required>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" >
           </div>
 
           <!-- Select Field -->
           <div class="form-group">
             <label for="selectField">Food Type</label>
             <select class="form-control" id="type" name="type">
-              <option value="-1" selected disabled>Select Type</option>
+              <option value="-1"  selected d>Select Type</option>
               <option value="Pure Veg">Pure Veg</option>
               <option value="Non-Veg">Non-Veg</option>
             </select>
@@ -118,27 +118,27 @@
           <!-- Input Text Field -->
           <div class="form-group">
             <label for="textInput">Food Quantity</label>
-            <input type="number" class="form-control" id="qty" name="qty" placeholder="Enter quantity" required>
+            <input type="number" class="form-control" id="qty" name="qty" placeholder="Enter quantity" >
           </div>
 
           <!-- Textarea Field -->
           <div class="form-group">
             <label for="textareaField">Time of Preparation:</label>
-            <input class="form-control" id="preparation_time" placeholder="Time of Preparation" name="preparation_time" required></input>
+            <input class="form-control" id="preparation_time" placeholder="Time of Preparation" name="preparation_time" ></input>
           </div>
 
           <!-- Textarea Field -->
           <div class="form-group">
             <label for="textareaField">Description:</label>
             <textarea class="form-control" id="description" placeholder="Description" name="description"
-              rows="3" required></textarea>
+              rows="3" ></textarea>
           </div>
     
           <!-- File Field -->
           <div class="form-group">
             <label for="fileField">Image</label>
             <input type="file" class="form-control py-2 rounded-0" id="images" name="images" placeholder="Image"
-              accept=".png,.jpg,.jpeg,.webp" required>
+              accept=".png,.jpg,.jpeg,.webp" >
           </div>
 
             <!-- Checkbox Field with default value "No" -->
@@ -148,7 +148,7 @@
               <input class="form-check-input" type="checkbox" id="is_del" name="is_del" value="Yes">
           </div>
         </div>
-
+        <div class="error text-danger font-weight-bold text-center"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

@@ -35,7 +35,7 @@ def send_email(request):
                 # Using list comprehension to create a list of email addresses
                 email_list = [donor.email for donor in donor_queryset]
                 subject = "Reminder Notification on Excess Food"
-                message = message =  f'''This is a friendly reminder that the user request for {food_name} has been noted, and it is scheduled for {user_date}.
+                message =  f'''This is a friendly reminder that the user request for {food_name} has been noted, and it is scheduled for {user_date}.
 
 We look forward to serving you on {user_date}.
 
@@ -49,6 +49,36 @@ Excess Food Community.'''
                 to_email = email_list
                 send_mail(subject, message, from_email, to_email)
                 print("Email sent successfully...")
+
+    return HttpResponse("hello")
+
+
+def send_email_new_request(request):
+    if request.method == 'POST':
+        donor_queryset = Donor.objects.all()
+
+        # Using list comprehension to create a list of email addresses
+        email_list = [donor.email for donor in donor_queryset]
+        subject = "New Request Notification on Excess Food"
+        message = f'''Dear User,
+
+We wanted to inform you that a new request for food/money has been added. 
+
+If you have any special preferences or additional requests, feel free to let us know.
+
+For more details and to manage your requests, please log in to your account on our website.
+
+If you want more details or have any questions, please visit our website.
+
+Thanks for being a part of the Excess Food Community!
+
+Best regards,
+Excess Food Community Team
+'''
+        from_email = settings.EMAIL_HOST_USER
+        to_email = email_list
+        send_mail(subject, message, from_email, to_email)
+        print("Email sent successfully...")
 
     return HttpResponse("hello")
 

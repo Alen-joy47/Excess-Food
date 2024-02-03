@@ -143,6 +143,8 @@
     src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
   <script src="{% static 'js/validate.js' %}"></script>
   <script src="{% static 'js/ajax.js' %}"></script>
+  <script src="{% static 'js/donorValidation.js' %}"></script>
+  <script src="{% static 'js/userValidate.js' %}"></script>
 
   <script>
     // Function to make an asynchronous HTTP request
@@ -154,8 +156,22 @@
     // Set up a recurring timer to click the button every minute
     setInterval(function() {
         // sendMail();
-    }, 60000); // 60000 milliseconds = 1 minute
+    }, 10000); // 60000 milliseconds = 1 minute
 </script>
+
+<!-- <script>
+  // Function to make an asynchronous HTTP request
+  function sendMail() {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "/sendmail/", true);
+      xhr.send();
+  }
+
+  // Set up a recurring timer to click the button every day
+  setInterval(function() {
+      sendMail();
+  }, 24 * 60 * 60 * 1000); // 24 hours * 60 minutes * 60 seconds * 1000 milliseconds = 1 day
+</script> -->
 </body>
 
 </html>

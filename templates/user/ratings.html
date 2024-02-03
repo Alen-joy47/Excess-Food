@@ -17,12 +17,12 @@
    
   <div class="container w-50 mt-5 mb-5">
     <h3 class="text-center text-white">Ratings</h3>
-    <form action="/ratings/1" method="post">
+    <form action="/ratings/1" method="post" id="ratingForm">
         {% csrf_token %}
         <div class="mb-3">
             <label for="selectField1" class="form-label">Select Food:</label>
-            <select class="form-select" id="order_id" name="order_id" required>
-                <option value="" selected disabled>Select Food based on Order Id</option>
+            <select class="form-select" id="order_id" name="order_id" >
+                <option value="-1" selected>Select Food based on Order Id</option>
                 
                 {% for order in orders %}
                 <option value="{{order.order_id}}">{{order.name}}------>{{order.order_id}}</option>
@@ -32,8 +32,8 @@
 
         <div class="mb-3">
             <label for="selectField2" class="form-label">Select Ratings:</label>
-            <select class="form-select" id="ratings" name="ratings" required>
-                <option value="" selected disabled>Select Here</option>
+            <select class="form-select" id="ratings" name="ratings" >
+                <option value="-1" selected >Select Here</option>
                 <option value="5">Excellent</option>
                 <option value="4">Very Good</option>
                 <option value="3">Good</option>
@@ -44,11 +44,13 @@
 
         <div class="mb-3">
             <label for="textArea" class="form-label">Description</label>
-            <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+            <textarea class="form-control" id="description" name="description" rows="4" ></textarea>
         </div>
 
+        <div class="error text-danger font-weight-bold text-center"></div>
+
         <button type="button" class="btn btn-secondary" onclick="clearAll()">Clear All</button>
-        <button type="submit" class="btn btn-primary" onclick="saveForm()">Save</button>
+        <button type="submit" class="btn btn-primary">Save</button>
     </form>
 </div>
 

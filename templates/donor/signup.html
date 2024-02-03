@@ -27,11 +27,10 @@
       
                       <p class="text-center h3 fw-bold mb-3 mx-1 mx-md-4 mt-2">Sign up</p>
       
-                      <form class="mx-1 mx-md-4" method="post" action="/sendOtp/" name="myform" id="myform">
+                      <form class="mx-1 mx-md-4" method="post" action="/sendOtp/" id="donorSignup">
       
                         {% csrf_token %}
-                        <input type="text" name="type" value="donor" hidden>
-
+                        <input type="text" name="type" value="user" hidden>
                         <div class="form-group mb-4">
                         <label class="form-label" for="form2Example11">Name</label>
                         <input type="text" id="name" name="name"  class="form-control" placeholder="Name"  autocomplete="off"/>
@@ -54,7 +53,7 @@
                         <div class="form-group">
                           <label for="exampleSelect">Select an Gender:</label>
                           <select class="form-control" id="gender" name="gender">
-                            <option value="0" selected>Select Gender</option>
+                            <option value="-1" selected>Select Gender</option>
                             <option value="1">Male</option>
                             <option value="2">Female</option>
                             <option value="3">Others</option>
@@ -80,9 +79,11 @@
                         <h6 id="repasswordcheck"></h6>
 
                         </div>
+
+                        <div class="error text-danger font-weight-bold text-center"></div>
       
-                        <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                          <button type="submit" id="submit" onclick="validate_btn();" name="submit" class="btn btn-primary btn-md">Submit</button>
+                        <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4 my-5">
+                          <button type="submit" class="btn btn-primary btn-md">Submit</button>
                         </div>
       
                       </form>
