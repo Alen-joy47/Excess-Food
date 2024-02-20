@@ -51,6 +51,7 @@ urlpatterns = [
     path('viewHistory/', view_history, name="view_history"), # type: ignore
     path('requestForFood/<int:category>', food_request, name="food_request"), # type: ignore
     path('sendmail/', send_email_to_donor, name="send_email_to_donor"), # type: ignore
+    path('test_food/<int:foodId>/<str:temp>/<str:humidity>', test_food, name="test_food"), # type: ignore
 ]
 
 

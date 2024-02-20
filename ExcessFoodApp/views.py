@@ -1,7 +1,7 @@
 from random import random
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view # type: ignore
 from ExcessFoodApp.rawQuery import *
 from .helpers import *
 from .models import *
@@ -10,6 +10,19 @@ from django.core.serializers.json import DjangoJSONEncoder
 import random
 from django.contrib.auth import logout
 from django.views.decorators.cache import cache_control
+import requests
+from django.utils import timezone
+from datetime import datetime
+import pytz
+
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix, accuracy_score
+import seaborn as sb
+import joblib
 
 
 utc_now = timezone.now()
@@ -21,7 +34,7 @@ ist_now = utc_now.astimezone(timezone.get_fixed_timezone(330))  # UTC+5:30 for I
 formatted_time = ist_now.strftime('%Y-%m-%d %H:%M:%S')
 
 ingredients = ["Eggs", "Milk and milk products", "Fats and oils", "Fruits", "Grain", "Nuts and baking products", "Herbs and spices",
-                                    "Meat", "Sausages and fish", "Pasta, rice and pulses"]
+                                    "Pasta", "rice and pulses"]
 
 def indexPage(request):
     foods = Food.objects.filter(is_enabled = 1).all()
@@ -48,7 +61,8 @@ def donorLogin(request):
     return render(request, "donor/login.html")
 
 def donorSignup(request):
-    return render(request, "donor/signup.html")
+    locations = Places.objects.all()
+    return render(request, "donor/signup.html", {'locations' : locations})
 
 @api_view(['POST'])
 def send_otp(request):
@@ -58,6 +72,7 @@ def send_otp(request):
     email = data.get('email')
     gender = data.get('gender')
     address = data.get('address')
+    location = data.get('location')
     password = data.get('password')
     repassword = data.get('repassword')
     category = data.get('type')
@@ -104,6 +119,7 @@ def send_otp(request):
                 donor_phone1.name = name
                 donor_phone1.gender = gender
                 donor_phone1.address = address
+                donor_phone1.location = location
                 donor_phone1.password = password
                 donor_phone1.otp = otp # type: ignore
                 donor_phone1.save()
@@ -116,7 +132,7 @@ def send_otp(request):
             
             # otp =send_otp_to_phone(phone)
             otp = 222222
-            user = User(name = name, contact = phone, email = email, gender = gender, address = address, password = password, otp = otp, created_date = formatted_time)
+            user = User(name = name, contact = phone, email = email, gender = gender, address = address, password = password, location = location, otp = otp, created_date = formatted_time)
             user.save()
             id = user.id # type: ignore
             phone = user.contact
@@ -126,8 +142,6 @@ def send_otp(request):
         messages.error(request, "Password does not match...")
         return redirect('index') 
             
-
-
 @api_view(['POST'])
 def verify_otp(request, id):
     data = request.data
@@ -188,6 +202,7 @@ def add_food(request, id):
     if request.method == "POST" : 
         name = request.POST['name']
         type = request.POST['type']
+        category = request.POST['category']
         ingredient = request.POST.getlist('ingredients')
         ingredientss = ', '.join(ingredient[:-1])
         if ingredient:  # Check if the list is not empty
@@ -201,7 +216,7 @@ def add_food(request, id):
         # food = Food.objects.filter(name = name).first()
         # if food == None:
         id = request.session['donorid']
-        foods = Food(name = name, type = type, ingredients = ingredientss, quantity = quantity, prepared_time=preparation_time, is_deliverable= is_del,  description = description,  image = request.FILES['images'], donor_id = id, created_date = formatted_time)
+        foods = Food(name = name, type = type, ingredients = ingredientss, quantity = quantity, category= category, prepared_time=preparation_time, is_deliverable= is_del,  description = description,  image = request.FILES['images'], donor_id = id, created_date = formatted_time)
         foods.save()
         foods = Food.objects.filter(is_enabled = 1).all()
         messages.success(request, "Food added successfully...!")
@@ -245,8 +260,29 @@ def get_food(request, id, donor_id, category):
             rating = 0
         else:
             rating = ratings[0]['rating']
-        return render(request, "user/foodDetails.html", {"food" : food, 'rating' : rating})
-    
+
+        base_url = "http://api.openweathermap.org/data/2.5/weather"
+        params = {
+            'q': "Mangalore",
+            'appid': "8018adbb3f533582a7a5ccc7f533fab3",
+        }
+        response = requests.get(base_url, params=params)
+        data = response.json()
+
+        if response.status_code == 200:
+            temperature = data['main']['temp']
+            humidity = data['main']['humidity']
+             # Check if temperature is not None before converting
+            if temperature is not None:
+                temperature_celsius = kelvin_to_celsius(temperature)
+            else:
+                temperature_celsius = None
+        # temperature_celsius = 30.00
+        # humidity = 50
+        return render(request, "user/foodDetails.html", {"food" : food, 'rating' : rating, 'temperature' : temperature_celsius, 'humidity' : humidity})
+
+def kelvin_to_celsius(kelvin):
+    return kelvin - 273.15    
 
 def userLogin(request):
     if request.method == "POST":
@@ -267,7 +303,8 @@ def userLogin(request):
     return render(request, "user/login.html")
 
 def userSignup(request):
-    return render(request, "user/signup.html")
+    locations = Places.objects.all()
+    return render(request, "user/signup.html", {'locations' : locations})
 
 def userHome(request):
     if 'userid' in request.session:
@@ -279,7 +316,6 @@ def userHome(request):
     else:
         foods = Food.objects.filter(is_enabled = 1).all()
         return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
-
 
 def profile(request, id, category):
     if category == 0:
@@ -477,7 +513,6 @@ def view_history(request):
     donors = Donor.objects.all()
     return render(request, "user/orderHistory.html", {"orders" : orders, "foods" : foods, "donors" : donors})
 
-
 def view_request(request):
     id = request.session['donorid']
     orders = Order.objects.filter(donor_id = id).all()
@@ -532,7 +567,108 @@ def request_list(request):
             req.save()
     return render(request, 'donor/requestList.html', {'foods' : foods, 'moneys' : moneys})
 
-
 def send_email_to_donor(request):
     send_email(request)
     return redirect('index')
+
+def test_food(request, foodId, temp, humidity):
+    print(temp)
+    print(humidity)
+    user_id = request.session['userid']
+
+    user = User.objects.filter(id = user_id).first()
+    
+    food = Food.objects.filter(id=foodId).first()
+    is_dairy_product = 0
+    food_type = 0
+    food_category = food.category
+    temp_val = 0
+    hum_val = 0
+    prepared_value = 0
+    destination = user.location
+
+    if float(temp) > 35:
+        temp_val = 1
+    
+    if float(humidity) > 80:
+        hum_val = 1
+    
+    if food is not None:
+        print(food.ingredients)
+        ingredients_string = food.ingredients
+        required_ingredients = ["Eggs", "Milk and milk products"]
+
+        for ingredient in required_ingredients:
+            if ingredient in ingredients_string:
+                is_dairy_product = 1
+                print(f"{ingredient} is present.")
+            else:
+                print(f"{ingredient} is not present.")
+        if food.type == "Pure Veg":
+            food_type = 0
+        else: 
+            food_type = 1
+
+
+        # Assuming food.prepared_time is a timezone-aware datetime field in your model
+        prepared_time = food.prepared_time
+
+        # Get the current time in the same timezone as prepared_time
+        current_datetime = datetime.now(prepared_time.tzinfo)
+
+        print("Original prepared_time:", prepared_time)
+        print("Original current_datetime:", current_datetime)
+
+        # Add 5.5 hours to current_datetime
+        current_datetime += timedelta(hours=5, minutes=30)
+
+        print("Modified current_datetime:", current_datetime)
+
+        # Calculate the time difference
+        time_difference = current_datetime - prepared_time
+
+        # Print the time difference
+        print(f"Time difference: {time_difference}")
+
+        # Check if time difference is greater than 5 hours and days > 1
+        if time_difference.total_seconds() > 5 * 3600 or time_difference.days > 1:
+            prepared_value = 1
+        else:
+            prepared_value = 0
+
+        print("Dairy ", is_dairy_product)
+        print("Type ", food_type)
+        print("category ", food_category)
+        print("Time ", prepared_value)
+        print("temp ", temp_val)
+        print("humidity ", hum_val)
+        print("location ", destination)
+
+
+        # Specify the correct encoding (e.g., 'ISO-8859-1' or 'utf-16') based on your data
+        dataset = pd.read_csv('media/food_dataset.csv')
+
+        # Rest of your code remains unchanged
+        dataset.shape
+        X = np.array(dataset.iloc[:, :-1])
+        X = X.astype(dtype='int')
+        Y = np.array(dataset.iloc[:, -1])
+        Y = Y.reshape(-1,)
+
+        X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.25, random_state=42)
+
+        print(X_train.shape)
+        # print(type(is_dairy_product))
+
+        model_food = RandomForestClassifier(n_estimators=100, criterion='entropy')
+        model_food.fit(X_train, y_train)
+        X_test = [is_dairy_product, food_type, food_category, prepared_value, temp_val, hum_val, destination]
+
+        y_predicted = model_food.predict(np.asarray(X_test).reshape(1, -1))
+        # print(type(y_predicted[0]))
+        result = str(y_predicted[0])
+        # print(type(result))
+        id = request.session['userid']
+        foods = Food.objects.filter(is_enabled = 1).all()
+        return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id, 'result' : result})
+    

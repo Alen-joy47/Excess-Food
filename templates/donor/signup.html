@@ -30,7 +30,7 @@
                       <form class="mx-1 mx-md-4" method="post" action="/sendOtp/" id="donorSignup">
       
                         {% csrf_token %}
-                        <input type="text" name="type" value="user" hidden>
+                        <input type="text" name="type" value="donor" hidden>
                         <div class="form-group mb-4">
                         <label class="form-label" for="form2Example11">Name</label>
                         <input type="text" id="name" name="name"  class="form-control" placeholder="Name"  autocomplete="off"/>

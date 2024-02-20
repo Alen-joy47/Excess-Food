@@ -120,6 +120,7 @@ USE_I18N = True
 USE_TZ = True
 
 API_KEY = "3154af6c-900c-11ee-8cbb-0200cd936042"
+API_KEY_WEATHER = "8018adbb3f533582a7a5ccc7f533fab3"
 
 
 # Static files (CSS, JavaScript, Images)

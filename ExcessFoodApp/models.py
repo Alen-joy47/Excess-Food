@@ -12,6 +12,7 @@ class Donor(models.Model):
     email = models.CharField(max_length=100, null=False)
     gender = models.IntegerField(null=True)
     address = models.TextField(max_length=200, null=True)
+    location = models.TextField(max_length=200, null=True)
     password = models.TextField(max_length=200, null=True)
     is_verified = models.IntegerField(default=0)
     otp = models.CharField(max_length=6, null=True)
@@ -27,8 +28,9 @@ class Food(models.Model):
     donor_id = models.IntegerField(null=True)
     name = models.CharField(max_length=100, null=True)
     type = models.CharField(max_length=100, null=True)
+    category = models.CharField(max_length=100, null=True)
     quantity = models.IntegerField(null=True)
-    prepared_time = models.CharField(max_length=100, null=True)
+    prepared_time = models.DateTimeField (null=True)
     is_deliverable = models.CharField(max_length=100, null=True)
     ingredients = models.TextField(null=True)
     description = models.TextField(null=True)
@@ -48,6 +50,7 @@ class User(models.Model):
     email = models.CharField(max_length=100, null=False)
     gender = models.IntegerField(null=True)
     address = models.TextField(max_length=200, null=True)
+    location = models.IntegerField(null=True)
     password = models.TextField(max_length=200, null=True)
     is_verified = models.IntegerField(default=0)
     otp = models.CharField(max_length=6, null=True)
@@ -112,3 +115,12 @@ class UserRequest(models.Model):
 
     class Meta:
         db_table = "requests"
+
+class Places(models.Model):
+    name = models.CharField(max_length=200, null=True)
+    values = models.IntegerField(default=1)
+    created_date = models.DateTimeField(null=True)
+    updated_date = models.DateTimeField(null=True)
+
+    class Meta:
+        db_table = "places"

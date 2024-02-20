@@ -12,12 +12,12 @@ WHERE orders.is_rated = 0 and orders.user_id = %s
         results = cursor.fetchall()
  
     # Convert the results to a list of dictionaries
-    columns = [col[0] for col in cursor.description]
+    columns = [col[0] for col in cursor.description]  # type: ignore
     data = [dict(zip(columns, row)) for row in results]
  
     return data
 
-def get_ratings(user_id):
+def get_ratings(user_id):  # type: ignore
     raw_query = """
        SELECT ratings.order_id, foods.name AS food_name, foods.image AS image, donors.name AS donor_name, ratings.ratings, ratings.description
 FROM ratings 
@@ -31,7 +31,7 @@ WHERE ratings.user_id = %s
         results = cursor.fetchall()
  
     # Convert the results to a list of dictionaries
-    columns = [col[0] for col in cursor.description]
+    columns = [col[0] for col in cursor.description]  # type: ignore
     data = [dict(zip(columns, row)) for row in results]
  
     return data
@@ -48,7 +48,7 @@ WHERE requests.req_type = 1
         results = cursor.fetchall()
  
     # Convert the results to a list of dictionaries
-    columns = [col[0] for col in cursor.description]
+    columns = [col[0] for col in cursor.description]  # type: ignore
     data = [dict(zip(columns, row)) for row in results]
  
     return data
@@ -65,7 +65,7 @@ WHERE requests.req_type = 2
         results = cursor.fetchall()
  
     # Convert the results to a list of dictionaries
-    columns = [col[0] for col in cursor.description]
+    columns = [col[0] for col in cursor.description]  # type: ignore
     data = [dict(zip(columns, row)) for row in results]
  
     return data
@@ -86,7 +86,7 @@ def get_ratings(donor_id):
         results = cursor.fetchall()
 
     # Convert the results to a list of dictionaries
-    columns = [col[0] for col in cursor.description]
+    columns = [col[0] for col in cursor.description]  # type: ignore
     data = [dict(zip(columns, row)) for row in results]
 
     # if not data:

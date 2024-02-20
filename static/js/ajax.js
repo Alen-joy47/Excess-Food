@@ -24,7 +24,6 @@ function editFood(id) {
     success: function (data) {
       console.log("Food Details:", data);
 
-
       // Assuming you have a form with the following input fields
       $("#id").val(data.id);
       $("#name").val(data.name);

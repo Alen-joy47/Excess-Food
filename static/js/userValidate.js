@@ -30,6 +30,7 @@ $(document).ready(function () {
       const phone = $("#phone");
       const gender = $("#gender");
       const address = $("#address");
+      const location = $("#location");
       const password = $("#password");
       const repassword = $("#repassword");
 
@@ -54,6 +55,10 @@ $(document).ready(function () {
           showError("Address is required");
           return false;
       }
+      if (location.val() == "-1") {
+        showError("Location is required");
+        return false;
+    }
       if (password.val() == "") {
         showError("Password is required");
         return false;
@@ -62,11 +67,11 @@ $(document).ready(function () {
           showError("Password is required");
           return false;
       }
-      if (password.val() === repassword.val()) {
-        showError("Password should be same...");
-        return false;
-      }
-
+    //   if (password.val() === repassword.val()) {
+    //     console.log(password.val(), " ", repassword.val());
+    //     showError("Password should be same...");
+    //     return false;
+    //   }
       showSuccess();
       return true;
   };

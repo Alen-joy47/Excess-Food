@@ -1,11 +1,10 @@
-import requests
+import requests  # type: ignore
 import random
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponse
 from ExcessFoodApp.models import Donor, UserRequest
 from django.utils import timezone
-# from datetime import datetime
 from datetime import datetime, timedelta, timezone
 
 def send_otp_to_phone(phone):
@@ -25,7 +24,7 @@ def send_email(request):
 
         for user in user_req:
             # print(type(user.date))
-            user_date = user.date.replace(tzinfo=None)  # Assuming user.date is already an aware datetime
+            user_date = user.date.replace(tzinfo=None)  # Assuming user.date is already an aware datetime  # type: ignore
             current_date = current_date.replace(tzinfo=None)
 
             if user_date > current_date:
@@ -82,5 +81,24 @@ Excess Food Community Team
 
     return HttpResponse("hello")
 
+
+
+import requests
+
+def get_weather(api_key, city):
+    base_url = "http://api.openweathermap.org/data/2.5/weather"
+    params = {
+        'q': city,
+        'appid': api_key,
+    }
+    response = requests.get(base_url, params=params)
+    data = response.json()
+
+    if response.status_code == 200:
+        temperature = data['main']['temp']
+        humidity = data['main']['humidity']
+        return temperature, humidity
+    else:
+        return None
 
 

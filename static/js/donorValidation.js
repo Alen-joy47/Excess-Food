@@ -155,6 +155,7 @@ $(document).ready(function () {
         const desc = $("#description");
         const img = $("#images");
         const SelectType = $("#type");
+        const category = $("#category");
 
         if (foodName.val() == "") {
             showError("Food name is required");
@@ -162,7 +163,12 @@ $(document).ready(function () {
         }
         if (SelectType.val() === "-1") {
             // Assuming '-1' is the default/invalid option
-            showError("Please select a valid option");
+            showError("Please select a type option");
+            return false;
+        }
+        if (category.val() === "-1") {
+            // Assuming '-1' is the default/invalid option
+            showError("Please select a category option");
             return false;
         }
         if (qty.val() == "") {
@@ -308,11 +314,10 @@ $(document).ready(function () {
             showError("Password is required");
             return false;
         }
-        if (password.val() === repassword.val()) {
-          showError("Password should be same...");
-          return false;
-        }
-  
+        // if (password.val() === repassword.val()) {
+        //   showError("Password should be same...");
+        //   return false;
+        // }
         showSuccess();
         return true;
     };

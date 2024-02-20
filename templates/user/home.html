@@ -37,6 +37,63 @@
 {% endblock navbar %}
 
 <div class="container-fluid" style="margin-top: 80px">
+  {% if result %}
+  {% if result == "1" %}
+  <!-- Bootstrap Modal for result "1" -->
+  <div class="modal fade" id="highProbabilityModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">High Probability Warning</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <h5 class="text-danger">The probability of spoiling a food is high.</h5>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Open the modal automatically -->
+  <script>
+    $(document).ready(function(){
+      $('#highProbabilityModal').modal('show');
+    });
+  </script>
+  {% else %}
+  <!-- Bootstrap Modal for result "1" -->
+  <div class="modal fade" id="lowProbabilityModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Low Probability Warning</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <h5 class="text-success">The probability of spoiling a food is low.</h5>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Open the modal automatically -->
+  <script>
+    $(document).ready(function(){
+      $('#lowProbabilityModal').modal('show');
+    });
+  </script>
+{% endif %}
+  {% endif %}
   <div class="row">
     {% for food in foods %}
     {% if food.quantity > 0 %}
@@ -212,6 +269,12 @@
       placeholder: "Select Date and Time",
   });
 </script>
+
+<!-- Include Bootstrap JS and jQuery -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
 
 {% endblock content %}
   
