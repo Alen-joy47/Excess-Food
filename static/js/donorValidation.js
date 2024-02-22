@@ -156,6 +156,9 @@ $(document).ready(function () {
         const img = $("#images");
         const SelectType = $("#type");
         const category = $("#category");
+        const preparation_time = $("#preparation_time");
+        // const checkbox1 = $("#checkbox1");
+        const checkboxes = document.querySelectorAll('input[name="ingredients"]:checked');
 
         if (foodName.val() == "") {
             showError("Food name is required");
@@ -171,8 +174,17 @@ $(document).ready(function () {
             showError("Please select a category option");
             return false;
         }
+        if (checkboxes.length === 0) {
+            showError("Please select at least one ingredient");
+            return false;
+        }
+
         if (qty.val() == "") {
             showError("Quantity is required");
+            return false;
+        }
+        if (preparation_time.val() == "") {
+            showError("preparation_time is required");
             return false;
         }
         if (desc.val() == "") {

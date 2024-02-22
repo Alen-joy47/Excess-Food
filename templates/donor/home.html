@@ -159,9 +159,9 @@
             <label>Ingredients</label>
             <br>
             {% for ingredient in ingredients %}
-            <label for="checkbox1"></label><input type="checkbox" id="checkbox1" name="ingredients"
-              value="{{ ingredient }}"> {{ ingredient }}</label>
-            {% endfor %}
+            <label for="checkbox{{ forloop.counter }}"></label>
+            <input type="checkbox" id="checkbox{{ forloop.counter }}" name="ingredients" value="{{ ingredient }}"> {{ ingredient }}</label>
+          {% endfor %}
           </div>
 
           <!-- Input Text Field -->
@@ -220,8 +220,7 @@
     dateFormat: "Y-m-d H:i",  // Adjust the date format to include both date and time
     time_24hr: true,
     minuteIncrement: 1,
-    defaultDate: new Date(),  // Set default date to today
-    placeholder: "Select date and time",
+    defaultDate: "",  // Set default date to today
   });
 </script>
 

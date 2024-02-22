@@ -128,6 +128,53 @@ $(document).ready(function () {
 
 
 $(document).ready(function () {
+    $("#orderNow").submit(function (event) {
+        event.preventDefault();
+        if (validateBus()) {
+            this.submit();
+        }
+    });
+  
+    const showError = (message) => {
+        const errorDisplay = $(".error");
+        errorDisplay.text(message);
+        errorDisplay
+            .closest(".input-control")
+            .addClass("error")
+            .removeClass("success");
+    };
+  
+    const showSuccess = () => {
+        const errorDisplay = $(".error");
+        errorDisplay.text("");
+        errorDisplay
+            .closest(".input-control")
+            .addClass("success")
+            .removeClass("error");
+    };
+  
+    const validateBus = () => {
+        const order_no = $("#address");
+        const description = $("#description");
+  
+        if (order_no.val() === "") {
+            showError("Address is required");
+            return false;
+        }
+        
+        if (description.val() == "") {
+            showError("Description is required");
+            return false;
+        }
+        showSuccess();
+        return true;
+    };
+  });
+
+
+
+
+$(document).ready(function () {
     // add new bus
     $("#requestForm").submit(function (event) {
         event.preventDefault();

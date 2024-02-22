@@ -50,8 +50,8 @@
                       
                       <h5>Food Description : </h5>
                       <p>{{ food.description }}.</p>
-                      <p>{{ temperature }}.</p>
-                      <p>{{ humidity }}.</p>
+                      <!-- <p>{{ temperature }}.</p>
+                      <p>{{ humidity }}.</p> -->
     
                       <div class="text-center">
                         <a class="btn btn-warning mx-3" href="/test_food/{{ food.id }}/{{ temperature }}/{{ humidity }}">Test Food</a>
@@ -72,7 +72,7 @@
   aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <form action="/orderFood/" method="post">
+      <form action="/orderFood/" method="post" id="orderNow">
         {% csrf_token %}
         <div class="modal-header">
           <h5 class="modal-title text-primary" id="heading">Order Food</h5>
@@ -117,6 +117,7 @@
             <label for="textareaField">Description:</label>
             <textarea class="form-control" id="description" placeholder="Description" name="description" rows="3"></textarea>
           </div>
+          <div class="error text-danger font-weight-bold text-center"></div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-primary">Order Now</button>
