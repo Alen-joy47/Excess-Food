@@ -100,7 +100,9 @@ def send_otp(request):
                 return redirect('donorSignup')  # Redirect to the donor signup page or any other appropriate page
             
             # otp =send_otp_to_phone(phone)
-            otp = 111111
+            otp =send_otp_to_mail(email)
+
+            # otp = 111111
             donor = Donor(name = name, contact = phone, email = email, gender = gender, address = address, password = password, otp = otp, created_date = formatted_time)
             donor.save()
             id = donor.id # type: ignore
@@ -115,7 +117,8 @@ def send_otp(request):
             donor_phone1 = User.objects.filter(contact = data.get('phone'), email = data.get('email'), is_verified = 0).first()
             if donor_phone1 != None and donor_phone1.contact == data.get('phone') and donor_phone1.email == data.get('email') and donor_phone1.is_verified == 0:
                 # otp =send_otp_to_phone(phone)
-                otp = 222222
+                otp =send_otp_to_mail(email)
+                # otp = 222222
                 donor_phone1.name = name
                 donor_phone1.gender = gender
                 donor_phone1.address = address
@@ -353,7 +356,7 @@ def ratings(request, category):
 
         id = request.session['userid']
         orders = get_Data(id)
-        ratings = get_ratings(id)
+        ratings = get_user_ratings(id)
         return render(request, "user/ratings.html", {"orders" : orders, 'ratings' : ratings})
     
 def editProfile(request, id, category):

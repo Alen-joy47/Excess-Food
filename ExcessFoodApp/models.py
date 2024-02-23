@@ -36,9 +36,8 @@ class Food(models.Model):
     description = models.TextField(null=True)
     image = models.ImageField(upload_to="food_images/" , max_length=250, null=False, default=None)
     is_enabled = models.IntegerField(default=1)
-    is_expaired = models.IntegerField(default=0)
-    created_date = models.DateTimeField(null=True)
-    updated_date = models.DateTimeField(null=True)
+    created_date = models.DateTimeField(auto_now_add=True, null=True)
+    updated_date = models.DateTimeField(auto_now=True, null=True)
 
 
     class Meta:
@@ -119,8 +118,6 @@ class UserRequest(models.Model):
 class Places(models.Model):
     name = models.CharField(max_length=200, null=True)
     values = models.IntegerField(default=1)
-    created_date = models.DateTimeField(null=True)
-    updated_date = models.DateTimeField(null=True)
 
     class Meta:
         db_table = "places"

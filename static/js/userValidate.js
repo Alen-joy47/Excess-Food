@@ -207,6 +207,7 @@ $(document).ready(function () {
         const qty = $("#qty");
         const desc = $("#description");
         const SelectType = $("#type");
+        const req_date = $("#req_date");
 
         if (foodName.val() == "") {
             showError("Food name is required");
@@ -219,6 +220,10 @@ $(document).ready(function () {
         }
         if (qty.val() == "") {
             showError("Quantity is required");
+            return false;
+        }
+        if (req_date.val() == "") {
+            showError("Date is required");
             return false;
         }
         if (desc.val() == "") {

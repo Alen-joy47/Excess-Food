@@ -11,47 +11,9 @@
 </a>
 {% endblock floatingButton %}
 
-<!-- <div class="container-fluid" style="margin-top: 80px;"> -->
-
-  <!-- <div class="card-group">
-    <div class="row">
-      {% for food in foods %}
-
-      {% if food.quantity > 0 %}
-      <div class="col-3">
-        <div class="card my-3">
-          <img src="{{ food.image.url }}" class="card-img-top" alt="..." height="250px">
-          <div class="card-body">
-            <div class="d-flex">
-              <h5 class="card-title">{{ food.name }}</h5>
-              {% if food.type == "Pure Veg" %}
-              <p class="text-white bg-success rounded text-center w-25 ml-auto p-0 text-nowrap">{{ food.type }}</p>
-              {% else %}
-              <p class="text-white bg-danger rounded text-center w-25 ml-auto p-0 text-nowrap">{{ food.type }}</p>
-              {% endif %}
-            </div>
-            <div class="description-container">
-              <p class="card-text description">{{ food.description|truncatewords:30 }}</p>
-              {% if food.description|wordcount > 30 %}
-              <p class="read-more"><a href="#" class="toggle-description">Read More</a></p>
-              <p class="full-description">{{ food.description }}</p>
-              {% endif %} -->
-            <!-- </div> -->
-            <!-- <a href="/getFood/{{food.id}}"><button class="btn btn-primary">Get Food</button></a>     -->
-            <!-- <p class="card-text"><small class="text-muted">{{ food.created_date }}</small></p>
-          </div>
-        </div>
-      </div>
-      {% endif %}
-
-      {% endfor %}
-    </div>
-  </div>
-</div> -->
 <div class="container-fluid" style="margin-top: 80px">
   <div class="row">
     {% for food in foods %}
-    
     {% if food.quantity > 0 %}
     <div class="col-md-3 mb-3">
       <div class="card h-100">
@@ -88,7 +50,7 @@
       </div>
     </div>
     {% endif %}
-      
+    {% empty%}
    
     {% endfor %}
   </div>

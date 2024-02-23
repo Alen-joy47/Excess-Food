@@ -6,6 +6,8 @@ from django.http import HttpResponse
 from ExcessFoodApp.models import Donor, UserRequest
 from django.utils import timezone
 from datetime import datetime, timedelta, timezone
+import requests
+
 
 def send_otp_to_phone(phone):
     try:
@@ -82,9 +84,6 @@ Excess Food Community Team
     return HttpResponse("hello")
 
 
-
-import requests
-
 def get_weather(api_key, city):
     base_url = "http://api.openweathermap.org/data/2.5/weather"
     params = {
@@ -100,5 +99,36 @@ def get_weather(api_key, city):
         return temperature, humidity
     else:
         return None
+
+
+def send_otp_to_mail(email):
+    # Generate a 6-digit OTP
+    otp = random.randint(100000, 999999)
+
+    # Using list comprehension to create a list of email addresses
+    email_list = [email]
+    subject = "Account Activation OTP for Excess Food"
+    
+    message = f'''Dear User,
+
+Thank you for creating an account on Excess Food. Your OTP for account activation is: {otp}
+
+For more details and to complete the activation process, please log in to your account on our website.
+
+If you have any questions or need assistance, please visit our website.
+
+Thanks for being a part of the Excess Food Community!
+
+Best regards,
+Excess Food Community Team
+'''
+    
+    from_email = settings.EMAIL_HOST_USER
+    to_email = email_list
+
+    send_mail(subject, message, from_email, to_email)
+    print("Activation OTP sent successfully...")
+
+    return otp
 
 
