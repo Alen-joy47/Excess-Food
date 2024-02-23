@@ -94,7 +94,7 @@ def send_otp(request):
                 donor_phone1.save()
                 id = donor_phone1.id # type: ignore
                 messages.success(request, 'OTP sent Successfully...!')
-                return render(request, "donor/otpVerify.html", {"id" : id, "phone" : phone})
+                return render(request, "donor/otpVerify.html", {"id" : id, "email" : email})
             if Donor.objects.filter(email=email).exists() or Donor.objects.filter(contact=phone).exists():
                 messages.error(request, "Duplicate found....")
                 return redirect('donorSignup')  # Redirect to the donor signup page or any other appropriate page
@@ -108,7 +108,7 @@ def send_otp(request):
             id = donor.id # type: ignore
             phone = donor.contact
             messages.success(request, 'OTP sent Successfully...!')
-            return render(request, "donor/otpVerify.html", {"id" : id, "phone" : phone})
+            return render(request, "donor/otpVerify.html", {"id" : id, "email" : email})
         else:
             donor_phone = User.objects.filter(contact = data.get('phone'), email = data.get('email'), is_verified = 1).first()
             if donor_phone != None and donor_phone.contact == data.get('phone') and donor_phone.email == data.get('email') and donor_phone.is_verified == 1:
