@@ -67,11 +67,6 @@ $(document).ready(function () {
           showError("Password is required");
           return false;
       }
-    //   if (password.val() === repassword.val()) {
-    //     console.log(password.val(), " ", repassword.val());
-    //     showError("Password should be same...");
-    //     return false;
-    //   }
       showSuccess();
       return true;
   };
