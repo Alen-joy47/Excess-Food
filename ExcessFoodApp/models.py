@@ -30,15 +30,22 @@ class Food(models.Model):
     type = models.CharField(max_length=100, null=True)
     category = models.CharField(max_length=100, null=True)
     quantity = models.IntegerField(null=True)
-    prepared_time = models.DateTimeField (null=True)
+    prepared_time = models.DateTimeField(null=True)
     is_deliverable = models.CharField(max_length=100, null=True)
     ingredients = models.TextField(null=True)
     description = models.TextField(null=True)
-    image = models.ImageField(upload_to="food_images/" , max_length=250, null=False, default=None)
+    image = models.ImageField(upload_to="food_images/", max_length=250, null=False, default=None)
     is_enabled = models.IntegerField(default=1)
-    created_date = models.DateTimeField(auto_now_add=True, null=True)
-    updated_date = models.DateTimeField(auto_now=True, null=True)
+    created_date = models.DateTimeField(null=True)
+    updated_date = models.DateTimeField(null=True)
 
+    def save(self, *args, **kwargs):
+        # Convert created_date and updated_date to Indian Standard Time (IST) and add 5 hours and 30 minutes
+        if not self.id:
+            self.created_date = timezone.now().astimezone(timezone.get_fixed_timezone(330)) + timezone.timedelta(minutes=330)
+        self.updated_date = timezone.now().astimezone(timezone.get_fixed_timezone(330)) + timezone.timedelta(minutes=330)
+        
+        super().save(*args, **kwargs)
 
     class Meta:
         db_table = "foods"

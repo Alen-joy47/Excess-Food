@@ -2,9 +2,10 @@ from django.db import connection
 
 def get_Data(user_id):
     raw_query = """
-        SELECT orders.order_id, orders.food_id, foods.donor_id, foods.name, orders.user_id FROM orders 
+        SELECT orders.id, orders.order_id, orders.food_id, foods.donor_id, foods.name, orders.user_id FROM orders 
 JOIN Foods ON orders.food_id = foods.id
-WHERE orders.is_rated = 0 and orders.user_id = %s
+WHERE orders.is_rated = 0 and orders.user_id = %s 
+ORDER BY orders.id DESC
     """
  
     with connection.cursor() as cursor:
@@ -19,11 +20,12 @@ WHERE orders.is_rated = 0 and orders.user_id = %s
 
 def get_user_ratings(user_id):  # type: ignore
     raw_query = """
-       SELECT ratings.order_id, foods.name AS food_name, foods.image AS image, donors.name AS donor_name, ratings.ratings, ratings.description
-FROM ratings 
-JOIN foods ON ratings.food_id = foods.id 
-JOIN donors ON ratings.donor_id = donors.id
-WHERE ratings.user_id = %s
+       SELECT ratings.id, ratings.order_id, foods.name AS food_name, foods.image AS image, donors.name AS donor_name, ratings.ratings, ratings.description
+       FROM ratings 
+       JOIN foods ON ratings.food_id = foods.id 
+       JOIN donors ON ratings.donor_id = donors.id
+       WHERE ratings.user_id = %s
+       ORDER BY ratings.id DESC
     """
  
     with connection.cursor() as cursor:

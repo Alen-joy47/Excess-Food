@@ -26,19 +26,20 @@ import joblib
 
 
 utc_now = timezone.now()
+ist_now = utc_now.astimezone(timezone.get_fixed_timezone(330))
+ist_now_adjusted = ist_now + timedelta(hours=5, minutes=30)
+formatted_time = ist_now_adjusted.strftime('%Y-%m-%d %H:%M:%S')
 
-# Convert UTC time to Indian Standard Time (IST)
-ist_now = utc_now.astimezone(timezone.get_fixed_timezone(330))  # UTC+5:30 for Indian Standard Time
-
-# Format the datetime as a string if needed
-formatted_time = ist_now.strftime('%Y-%m-%d %H:%M:%S')
 
 ingredients = ["Eggs", "Milk and milk products", "Fats and oils", "Fruits", "Grain", "Nuts and baking products", "Herbs and spices",
                                     "Pasta", "rice and pulses"]
 
 def indexPage(request):
-    foods = Food.objects.filter(is_enabled = 1).all()
+    foods = Food.objects.filter(is_enabled=1).order_by('-id').all()
     return render(request, "index.html", {"foods" : foods})
+
+def graphs(request):
+    return render(request, "graphs.html")
 
 def donorLogin(request):
     if request.method == "POST":
@@ -215,18 +216,13 @@ def add_food(request, id):
         preparation_time = request.POST['preparation_time']
         is_del = request.POST.get('is_del', 'No')
         description = request.POST['description']
-
-        # food = Food.objects.filter(name = name).first()
-        # if food == None:
+        print(preparation_time)
         id = request.session['donorid']
         foods = Food(name = name, type = type, ingredients = ingredientss, quantity = quantity, category= category, prepared_time=preparation_time, is_deliverable= is_del,  description = description,  image = request.FILES['images'], donor_id = id, created_date = formatted_time)
         foods.save()
-        foods = Food.objects.filter(is_enabled = 1).all()
+        foods = Food.objects.filter(is_enabled=1).order_by('-id').all()
         messages.success(request, "Food added successfully...!")
         return render(request, "donor/home.html", {"id" : id, "ingredients" : ingredients, "foods" : foods})
-        # else:
-        #     messages.error(request, "Duplicate food name...!")
-        #     return redirect("donorHome")
 
     return redirect("index")
 
@@ -244,7 +240,7 @@ def donorHome(request):
         # Get and reset the unread request count
         count = unread_requests.count()
 
-        foods = Food.objects.filter(is_enabled = 1).all()
+        foods = Food.objects.filter(is_enabled=1).order_by('-id').all()
         return render(request, "donor/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id, 'count' : count})
 
 def get_food(request, id, donor_id, category):
@@ -317,7 +313,7 @@ def userHome(request):
     if id == 0:
         return redirect("userLogin")
     else:
-        foods = Food.objects.filter(is_enabled = 1).all()
+        foods = Food.objects.filter(is_enabled=1).order_by('-id').all()
         return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
 
 def profile(request, id, category):
@@ -350,7 +346,7 @@ def ratings(request, category):
                 if orders != None:
                     orders.is_rated = 1
                     orders.save()
-                    foods = Food.objects.filter(is_enabled = 1).all()
+                    foods = Food.objects.filter(is_enabled = 1).order_by('-id').all()
                     messages.success(request, "Rating given success...")
                     return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
 
@@ -405,7 +401,7 @@ def editProfile(request, id, category):
             return render(request, "user/profile.html", {"user" : user})
 
 def view_food(request, id):
-    foods = Food.objects.filter(donor_id = id).all()
+    foods = Food.objects.filter(donor_id = id).order_by('-id').all()
     id = request.session['donorid']
     return render(request, "donor/viewFood.html", {"id" : id, "ingredients" : ingredients, "foods" : foods})
 
@@ -414,7 +410,7 @@ def change_food_status(request, id, value) :
     food.is_enabled = value
     food.save()
     id = food.donor_id
-    foods = Food.objects.filter(donor_id = id).all()
+    foods = Food.objects.filter(donor_id = id).order_by('-id').all()
     messages.success(request, "Food status has been updated...!")
     return render(request, "donor/viewFood.html", {"id" : id, "ingredients" : ingredients, "foods" : foods})
 
@@ -422,7 +418,7 @@ def delete_food(request, id):
     food = Food.objects.get(id = id)
     food.delete()
     id = request.session['donorid']
-    foods = Food.objects.filter(donor_id = id).all()
+    foods = Food.objects.filter(donor_id = id).order_by('-id').all()
     messages.success(request, "Food has been deleted successfully...!")
     return render(request, "donor/viewFood.html", {"id" : id, "ingredients" : ingredients, "foods" : foods})
 
@@ -476,7 +472,7 @@ def update_food(request):
         food.updated_date = formatted_time # type: ignore
         food.save()
         id = request.session['donorid']
-        foods = Food.objects.filter(is_enabled = 1).all()
+        foods = Food.objects.filter(is_enabled = 1).order_by('-id').all()
         messages.success(request, "Food updated successfully...!")
         return render(request, "donor/home.html", {"id" : id, "ingredients" : ingredients, "foods" : foods})
     
@@ -494,7 +490,7 @@ def order_food(request):
         food_qty = Food.objects.filter(id = food_id).first()
         if quantity > int(food_qty.quantity): # type: ignore
             id = request.session['userid']
-            foods = Food.objects.filter(is_enabled = 1).all()
+            foods = Food.objects.filter(is_enabled = 1).order_by('-id').all()
             messages.error(request, "Out of stock... please try again")
             return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
 
@@ -505,20 +501,20 @@ def order_food(request):
         food.quantity -= quantity # type: ignore
         food.save()
         id = request.session['userid']
-        foods = Food.objects.filter(is_enabled = 1).all()
+        foods = Food.objects.filter(is_enabled = 1).order_by('-id').all()
         messages.success(request, "Food ordered successfully...!")
         return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
 
 def view_history(request):
     id = request.session['userid']
-    orders = Order.objects.filter(user_id = id).all()
+    orders = Order.objects.filter(user_id = id).order_by('-id').all()
     foods = Food.objects.all()
     donors = Donor.objects.all()
     return render(request, "user/orderHistory.html", {"orders" : orders, "foods" : foods, "donors" : donors})
 
 def view_request(request):
     id = request.session['donorid']
-    orders = Order.objects.filter(donor_id = id).all()
+    orders = Order.objects.filter(donor_id = id).order_by('-id').all()
     foods = Food.objects.all()
     users = User.objects.all()
     return render(request, "donor/viewRequest.html", {"orders" : orders, "foods" : foods, "users" : users})
@@ -537,7 +533,7 @@ def food_request(request, category):
             requests.save()
             send_email_new_request(request)
             id = request.session['userid']
-            foods = Food.objects.filter(is_enabled = 1).all()
+            foods = Food.objects.filter(is_enabled = 1).order_by('-id').all()
             messages.success(request, "Request send successfully...!")
             return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
     else:
@@ -582,13 +578,47 @@ def test_food(request, foodId, temp, humidity):
     user = User.objects.filter(id = user_id).first()
     
     food = Food.objects.filter(id=foodId).first()
+    item_id = 0
     is_dairy_product = 0
     food_type = 0
     food_category = food.category
     temp_val = 0
     hum_val = 0
     prepared_value = 0
+    food_time = 0
     destination = user.location
+
+    food_name = food.name
+
+    if food_name == "Rice":
+        item_id = 1
+        food_time = 8
+    elif food_name == "Curd Rice":
+        item_id = 2
+        food_time = 4
+    elif food_name == "Biryani":
+        item_id = 3
+        food_time = 7
+    elif food_name == "Chapati":
+        item_id = 4
+        food_time = 10
+    elif food_name == "Paisa":
+        item_id = 5
+        food_time = 6
+    elif food_name == "Samber":
+        item_id = 6
+        food_time = 10
+    elif food_name == "Koorma":
+        item_id = 7
+        food_time = 8
+    elif food_name == "Palya":
+        item_id = 8
+        food_time = 6
+    else:
+        item_id = 0
+        food_time = 5
+
+    print("Item id is :", item_id)
 
     if float(temp) > 35:
         temp_val = 1
@@ -615,6 +645,7 @@ def test_food(request, foodId, temp, humidity):
 
         # Assuming food.prepared_time is a timezone-aware datetime field in your model
         prepared_time = food.prepared_time
+        print(prepared_time)
 
         # Get the current time in the same timezone as prepared_time
         current_datetime = datetime.now(prepared_time.tzinfo)
@@ -632,9 +663,12 @@ def test_food(request, foodId, temp, humidity):
 
         # Print the time difference
         print(f"Time difference: {time_difference}")
+        print(f"Time difference: {time_difference}")
+        print(f"Food time  difference: {food_time}")
+
 
         # Check if time difference is greater than 5 hours and days > 1
-        if time_difference.total_seconds() > 5 * 3600 or time_difference.days > 1:
+        if time_difference.total_seconds() > food_time * 3600 or time_difference.days > 1:
             prepared_value = 1
         else:
             prepared_value = 0
@@ -649,7 +683,7 @@ def test_food(request, foodId, temp, humidity):
 
 
         # Specify the correct encoding (e.g., 'ISO-8859-1' or 'utf-16') based on your data
-        dataset = pd.read_csv('media/food_dataset.csv')
+        dataset = pd.read_csv('media/final_food_dataset.csv')
 
         # Rest of your code remains unchanged
         dataset.shape
@@ -661,17 +695,17 @@ def test_food(request, foodId, temp, humidity):
         X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.25, random_state=42)
 
         print(X_train.shape)
-        # print(type(is_dairy_product))
 
         model_food = RandomForestClassifier(n_estimators=100, criterion='entropy')
         model_food.fit(X_train, y_train)
-        X_test = [is_dairy_product, food_type, food_category, prepared_value, temp_val, hum_val, destination]
+        # X_test = [is_dairy_product, food_type, food_category, prepared_value, temp_val, hum_val, destination]
+        X_test = [item_id, is_dairy_product, food_type, prepared_value, temp_val, destination]
 
         y_predicted = model_food.predict(np.asarray(X_test).reshape(1, -1))
         # print(type(y_predicted[0]))
         result = str(y_predicted[0])
         # print(type(result))
         id = request.session['userid']
-        foods = Food.objects.filter(is_enabled = 1).all()
+        foods = Food.objects.filter(is_enabled = 1).order_by('-id').all()
         return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id, 'result' : result})
     

@@ -160,7 +160,7 @@ $(document).ready(function () {
         // const checkbox1 = $("#checkbox1");
         const checkboxes = document.querySelectorAll('input[name="ingredients"]:checked');
 
-        if (foodName.val() == "") {
+        if (foodName.val() == "-1") {
             showError("Food name is required");
             return false;
         }

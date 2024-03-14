@@ -204,7 +204,7 @@ $(document).ready(function () {
         const SelectType = $("#type");
         const req_date = $("#req_date");
 
-        if (foodName.val() == "") {
+        if (foodName.val() == "-1") {
             showError("Food name is required");
             return false;
         }

@@ -126,10 +126,19 @@
         </div>
         <div class="modal-body">
 
-          <!-- Input Text Field -->
           <div class="form-group">
-            <label for="textInput">Food Name</label>
-            <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" >
+            <label for="selectField">Food Name</label>
+            <select class="form-control" id="name" name="name">
+              <option value="-1"  selected d>Select Food</option>
+              <option value="Rice">Rice</option>
+              <option value="Curd Rice">Curd Rice</option>
+              <option value="Biryani">Biryani</option>
+              <option value="Chapati">Chapati</option>
+              <option value="Paisa">Paisa</option>
+              <option value="Samber">Samber</option>
+              <option value="Koorma">Koorma</option>
+              <option value="Palya">Palya</option>
+            </select>
             <!-- <div class="error text-danger font-weight-bold"></div> -->
           </div>
 
@@ -221,8 +230,10 @@
     time_24hr: true,
     minuteIncrement: 1,
     defaultDate: "",  // Set default date to today
+    timezone: "Asia/Kolkata" // Set the timezone to Indian Standard Time
   });
 </script>
+
 
 <style>
   .description-container .full-description {

@@ -38,6 +38,7 @@ urlpatterns = [
     path('updateFood/', update_food, name="update_food"), # type: ignore
     path('viewRequest/', view_request, name="view_request"), # type: ignore
     path('requestList/', request_list, name="requestList"), # type: ignore
+    path('graphs/', graphs, name="graphs"), # type: ignore
 
     # user
     path('loginUser/', userLogin, name="userLogin"),

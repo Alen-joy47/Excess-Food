@@ -1,0 +1,31 @@
+{% extends 'base/indexBase.html' %}
+{% load static %}
+
+{% block content %}
+<div style="margin-top: 80px;">
+    <div class="container-fluid">
+        <div class="card hoverable" style="border-radius: 35px; background-color: white">
+            <div class="d-flex justify-content-center">
+                <span class="badge badge-success w-50 my-3">
+                    <h1>Graph Images</h1>
+                </span>
+            </div>
+            <div class="card-body mb-0 text-center" style="display: flex; justify-content: space-evenly;">
+                <div>
+                    <h4 class="text-primary">Confusion Random Forest</h4>
+                    <img class="my-2" src="{% static 'images/graph1.png' %}" height="400" width="400"/>
+                </div>
+                <div>
+                    <h4 class="text-primary">Random Forest for SVC</h4>
+                    <img class="my-2" src="{% static 'images/graph2.png' %}" height="400" width="400"/>
+                </div>
+                <div>
+                    <h4 class="text-primary">KNN</h4>
+                    <img class="my-2" src="{% static 'images/graph3.png' %}" height="400" width="400"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+    
