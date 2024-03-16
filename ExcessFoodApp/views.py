@@ -86,7 +86,8 @@ def send_otp(request):
             donor_phone1 = Donor.objects.filter(contact = data.get('phone'), email = data.get('email'), is_verified = 0).first()
             if donor_phone1 != None and donor_phone1.contact == data.get('phone') and donor_phone1.email == data.get('email') and donor_phone1.is_verified == 0:
                 # otp =send_otp_to_phone(phone)
-                otp = 111111
+                otp =send_otp_to_mail(email)
+                # otp = 111111
                 donor_phone1.name = name
                 donor_phone1.gender = gender
                 donor_phone1.address = address
@@ -135,7 +136,8 @@ def send_otp(request):
                 return redirect('userSignup')  # Redirect to the donor signup page or any other appropriate page
             
             # otp =send_otp_to_phone(phone)
-            otp = 222222
+            otp =send_otp_to_mail(email)
+            # otp = 222222
             user = User(name = name, contact = phone, email = email, gender = gender, address = address, password = password, location = location, otp = otp, created_date = formatted_time)
             user.save()
             id = user.id # type: ignore
@@ -216,7 +218,7 @@ def add_food(request, id):
         preparation_time = request.POST['preparation_time']
         is_del = request.POST.get('is_del', 'No')
         description = request.POST['description']
-        print(preparation_time)
+        # print(preparation_time)
         id = request.session['donorid']
         foods = Food(name = name, type = type, ingredients = ingredientss, quantity = quantity, category= category, prepared_time=preparation_time, is_deliverable= is_del,  description = description,  image = request.FILES['images'], donor_id = id, created_date = formatted_time)
         foods.save()
@@ -278,8 +280,8 @@ def get_food(request, id, donor_id, category):
                 temperature_celsius = None
         # temperature_celsius = 30.00
         # humidity = 50
-        print("Temp",temperature_celsius)
-        print("Temp {:.2f}".format(temperature_celsius))
+        # print("Temp",temperature_celsius)
+        # print("Temp {:.2f}".format(temperature_celsius))
 
         return render(request, "user/foodDetails.html", {"food" : food, 'rating' : rating, 'temperature' : temperature_celsius, 'humidity' : humidity})
 
@@ -676,14 +678,14 @@ def test_food(request, foodId, temp, humidity):
         
         print("-"*50)
         print("Temperature :",temp)
-        print("Item id is :", item_id)
-        print("Dairy ", is_dairy_product)
-        print("Type ", food_type)
+        print("Item id is  :", item_id)
+        print("Dairy       :", is_dairy_product)
+        print("Type        :", food_type)
         # print("category ", food_category)
-        print("Time(lifespan) ", prepared_value)
-        print("temp ", temp_val)
+        print("lifespan    :", prepared_value)
+        print("temp        :", temp_val)
         # print("humidity ", hum_val)
-        print("location(distance) ", destination)
+        print("location    :", destination)
         print("-"*50)
 
         modal_val = [item_id, is_dairy_product, food_type, prepared_value, temp_val, destination]

@@ -73,7 +73,7 @@ WHERE requests.req_type = 2
     return data
 
 def get_ratings(donor_id):
-    print(donor_id)
+    # print(donor_id)
     raw_query = """
         SELECT ROUND(AVG(ratings.ratings), 1) AS rating, donors.name AS donor_name, donors.id
         FROM ratings
