@@ -716,7 +716,7 @@ def test_food(request, foodId, temp, humidity):
         # print(type(y_predicted[0]))
         result = str(y_predicted[0])
         # print(type(result))
-        print(resu)
+        # print(resu)
         id = request.session['userid']
         foods = Food.objects.filter(is_enabled = 1).order_by('-id').all()
         return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id, 'result' : result})
