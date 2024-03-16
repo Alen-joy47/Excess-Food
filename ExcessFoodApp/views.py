@@ -278,10 +278,14 @@ def get_food(request, id, donor_id, category):
                 temperature_celsius = None
         # temperature_celsius = 30.00
         # humidity = 50
+        print("Temp",temperature_celsius)
+        print("Temp {:.2f}".format(temperature_celsius))
+
         return render(request, "user/foodDetails.html", {"food" : food, 'rating' : rating, 'temperature' : temperature_celsius, 'humidity' : humidity})
 
-def kelvin_to_celsius(kelvin):
-    return kelvin - 273.15    
+def kelvin_to_celsius(kelvin_temp):
+    celsius_temp = kelvin_temp - 273.15
+    return round(celsius_temp, 2)  
 
 def userLogin(request):
     if request.method == "POST":
@@ -571,8 +575,8 @@ def send_email_to_donor(request):
     return redirect('index')
 
 def test_food(request, foodId, temp, humidity):
-    print(temp)
-    print(humidity)
+    # print("Temp",temp)
+    # print("Humidity",humidity)
     user_id = request.session['userid']
 
     user = User.objects.filter(id = user_id).first()
@@ -618,7 +622,7 @@ def test_food(request, foodId, temp, humidity):
         item_id = 0
         food_time = 5
 
-    print("Item id is :", item_id)
+    # print("Item id is :", item_id)
 
     if float(temp) > 35:
         temp_val = 1
@@ -627,44 +631,41 @@ def test_food(request, foodId, temp, humidity):
         hum_val = 1
     
     if food is not None:
-        print(food.ingredients)
+        print("ingredients ",food.ingredients)
         ingredients_string = food.ingredients
         required_ingredients = ["Eggs", "Milk and milk products"]
 
         for ingredient in required_ingredients:
             if ingredient in ingredients_string:
                 is_dairy_product = 1
-                print(f"{ingredient} is present.")
-            else:
-                print(f"{ingredient} is not present.")
+                # print(f"{ingredient} is present.")
+            # else:
+                # print(f"{ingredient} is not present.")
         if food.type == "Pure Veg":
             food_type = 0
         else: 
             food_type = 1
 
-
-        # Assuming food.prepared_time is a timezone-aware datetime field in your model
         prepared_time = food.prepared_time
-        print(prepared_time)
+        # print(prepared_time)
 
-        # Get the current time in the same timezone as prepared_time
         current_datetime = datetime.now(prepared_time.tzinfo)
 
-        print("Original prepared_time:", prepared_time)
-        print("Original current_datetime:", current_datetime)
+        # print("Original prepared_time:", prepared_time)
+        # print("Original current_datetime:", current_datetime)
 
         # Add 5.5 hours to current_datetime
         current_datetime += timedelta(hours=5, minutes=30)
 
-        print("Modified current_datetime:", current_datetime)
+        # print("Modified current_datetime:", current_datetime)
 
         # Calculate the time difference
         time_difference = current_datetime - prepared_time
 
         # Print the time difference
-        print(f"Time difference: {time_difference}")
-        print(f"Time difference: {time_difference}")
-        print(f"Food time  difference: {food_time}")
+        # print(f"Time difference: {time_difference}")
+        # print(f"Time difference: {time_difference}")
+        # print(f"Food expairs in  : {food_time} hrs")
 
 
         # Check if time difference is greater than 5 hours and days > 1
@@ -672,14 +673,24 @@ def test_food(request, foodId, temp, humidity):
             prepared_value = 1
         else:
             prepared_value = 0
-
+        
+        print("-"*50)
+        print("Temperature :",temp)
+        print("Item id is :", item_id)
         print("Dairy ", is_dairy_product)
         print("Type ", food_type)
-        print("category ", food_category)
-        print("Time ", prepared_value)
+        # print("category ", food_category)
+        print("Time(lifespan) ", prepared_value)
         print("temp ", temp_val)
-        print("humidity ", hum_val)
-        print("location ", destination)
+        # print("humidity ", hum_val)
+        print("location(distance) ", destination)
+        print("-"*50)
+
+        modal_val = [item_id, is_dairy_product, food_type, prepared_value, temp_val, destination]
+        print("-"*50)
+        print(modal_val)
+        print("-"*50)
+
 
 
         # Specify the correct encoding (e.g., 'ISO-8859-1' or 'utf-16') based on your data
@@ -694,7 +705,7 @@ def test_food(request, foodId, temp, humidity):
 
         X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.25, random_state=42)
 
-        print(X_train.shape)
+        # print(X_train.shape)
 
         model_food = RandomForestClassifier(n_estimators=100, criterion='entropy')
         model_food.fit(X_train, y_train)
@@ -705,6 +716,7 @@ def test_food(request, foodId, temp, humidity):
         # print(type(y_predicted[0]))
         result = str(y_predicted[0])
         # print(type(result))
+        print(resu)
         id = request.session['userid']
         foods = Food.objects.filter(is_enabled = 1).order_by('-id').all()
         return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id, 'result' : result})
