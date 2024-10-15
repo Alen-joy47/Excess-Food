@@ -81,7 +81,7 @@ DATABASES = {
 		'ENGINE': 'django.db.backends.mysql',
 		'NAME': 'excess_food_db',
 		'USER': 'root',
-		'PASSWORD': 'mysql',
+		'PASSWORD': 'root',
 		'HOST':'localhost',
 		'PORT':'3306',
 	}
@@ -143,7 +143,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 from django.contrib.messages import constants as messages
-
 
 MESSAGE_TAGS = {
     messages.DEBUG : 'alert-info',

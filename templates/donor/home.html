@@ -93,10 +93,10 @@
             {% endif %}
           </div>
           <div class="description-container">
-            <p class="card-text description">{{ food.description|truncatewords:30 }}</p>
-            {% if food.description|wordcount > 30 %}
-            <p class="read-more m-0 p-0"><a href="#" class="toggle-description">Read More</a></p>
+            <p class="card-text description">{{ food.description|truncatewords:50 }}</p>
+            {% if food.description|wordcount > 50 %}
             <p class="full-description">{{ food.description }}</p>
+            <p class="read-more m-0 p-0"><a href="#" class="toggle-description">Read More</a></p>
             {% endif %}
           </div>
         </div>
@@ -230,7 +230,9 @@
     time_24hr: true,
     minuteIncrement: 1,
     defaultDate: "",  // Set default date to today
-    timezone: "Asia/Kolkata" // Set the timezone to Indian Standard Time
+    timezone: "Asia/Kolkata", // Set the timezone to Indian Standard Time
+    minDate: "today", // Disable past dates
+    maxDate: new Date().fp_incr(0) // Disable future dates (here set to 1 year from today)
   });
 </script>
 
@@ -246,19 +248,23 @@
 </style>
 
 <script>
-  // Add JavaScript to toggle visibility
-  document.addEventListener("DOMContentLoaded", function () {
-    var toggleButtons = document.querySelectorAll('.toggle-description');
+  document.querySelectorAll('.toggle-description').forEach(item => {
+      item.addEventListener('click', event => {
+          event.preventDefault();
+          let descriptionContainer = item.closest('.description-container');
+          let fullDescription = descriptionContainer.querySelector('.full-description');
+          let truncatedDescription = descriptionContainer.querySelector('.description');
 
-    toggleButtons.forEach(function (button) {
-      button.addEventListener('click', function (event) {
-        event.preventDefault();
-        var descriptionContainer = this.closest('.description-container');
-        var fullDescription = descriptionContainer.querySelector('.full-description');
-        descriptionContainer.classList.toggle('show-full-description');
-        button.textContent = descriptionContainer.classList.contains('show-full-description') ? 'Read Less' : 'Read More';
+          if (fullDescription.style.display === 'none') {
+              fullDescription.style.display = 'block';
+              truncatedDescription.style.display = 'none';
+              item.textContent = 'Read Less';
+          } else {
+              fullDescription.style.display = 'none';
+              truncatedDescription.style.display = 'block';
+              item.textContent = 'Read More';
+          }
       });
-    });
   });
 </script>
 {% else %}

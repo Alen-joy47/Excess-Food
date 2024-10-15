@@ -1,5 +1,6 @@
 {% extends 'base/indexBase.html' %}
 {% load static %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
 
 {% block content %}
 <div style="margin-top: 80px;">
@@ -27,6 +28,14 @@
                     <h4 class="text-primary">83.3%</h4>
                 </div>
             </div>
+            <div style="display: flex; justify-content: center; align-items: center;">
+                <div>
+                    <h4 class="text-primary" style="margin-left: 260px;">Combine Graph</h4>
+                    <img class="my-2" src="{% static 'images/combine.jpg' %}" height="400" width="700"/>
+                </div>
+            </div>
+        </div>
+        <div>
         </div>
     </div>
 </div>

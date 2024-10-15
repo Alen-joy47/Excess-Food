@@ -149,21 +149,33 @@ $(document).ready(function () {
     };
   
     const validateBus = () => {
+        const qty = $("#quantity");
         const order_no = $("#address");
         const description = $("#description");
-  
+
+        if (qty.val() === "") {
+            showError("Quantity is required");
+            return false;
+        }
+        if (parseInt(qty.val()) <= 0) {
+            showError("Quantity must be greater than 0");
+            return false;
+        }
+    
         if (order_no.val() === "") {
             showError("Address is required");
             return false;
         }
         
-        if (description.val() == "") {
+        
+        if (description.val() === "") {
             showError("Description is required");
             return false;
         }
         showSuccess();
         return true;
     };
+    
   });
 
 

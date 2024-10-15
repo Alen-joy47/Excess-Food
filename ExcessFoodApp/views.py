@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from rest_framework.decorators import api_view # type: ignore
 from ExcessFoodApp.rawQuery import *
+from ExcessFoodApp.tasks import delete_food_every_day
 from .helpers import *
 from .models import *
 from django.contrib import messages
@@ -35,7 +36,8 @@ ingredients = ["Eggs", "Milk and milk products", "Fats and oils", "Fruits", "Gra
                                     "Pasta", "rice and pulses"]
 
 def indexPage(request):
-    foods = Food.objects.filter(is_enabled=1).order_by('-id').all()
+    delete_food_every_day()
+    foods = Food.objects.filter(is_enabled=1, is_deleted = 0).order_by('-id').all()
     return render(request, "index.html", {"foods" : foods})
 
 def graphs(request):
@@ -49,7 +51,7 @@ def donorLogin(request):
         if donor != None:
             if donor.is_verified == 1:
                 request.session['donorid'] = donor.id # type: ignore
-                foods = Food.objects.filter(is_enabled = 1).all()
+                foods = Food.objects.filter(is_enabled = 1, is_deleted = 0).all()
                 id = request.session.get('donorid')
                 messages.success(request, "Login Successfully...!")
                 return redirect("donorHome")
@@ -85,9 +87,7 @@ def send_otp(request):
                 return redirect('donorSignup')
             donor_phone1 = Donor.objects.filter(contact = data.get('phone'), email = data.get('email'), is_verified = 0).first()
             if donor_phone1 != None and donor_phone1.contact == data.get('phone') and donor_phone1.email == data.get('email') and donor_phone1.is_verified == 0:
-                # otp =send_otp_to_phone(phone)
                 otp =send_otp_to_mail(email)
-                # otp = 111111
                 donor_phone1.name = name
                 donor_phone1.gender = gender
                 donor_phone1.address = address
@@ -95,20 +95,18 @@ def send_otp(request):
                 donor_phone1.otp = otp # type: ignore
                 donor_phone1.save()
                 id = donor_phone1.id # type: ignore
+                email = donor_phone1.email # type: ignore
                 messages.success(request, 'OTP sent Successfully...!')
                 return render(request, "donor/otpVerify.html", {"id" : id, "email" : email})
             if Donor.objects.filter(email=email).exists() or Donor.objects.filter(contact=phone).exists():
                 messages.error(request, "Duplicate found....")
                 return redirect('donorSignup')  # Redirect to the donor signup page or any other appropriate page
             
-            # otp =send_otp_to_phone(phone)
             otp =send_otp_to_mail(email)
-
-            # otp = 111111
             donor = Donor(name = name, contact = phone, email = email, gender = gender, address = address, password = password, otp = otp, created_date = formatted_time)
             donor.save()
             id = donor.id # type: ignore
-            phone = donor.contact
+            email = donor.email
             messages.success(request, 'OTP sent Successfully...!')
             return render(request, "donor/otpVerify.html", {"id" : id, "email" : email})
         else:
@@ -118,9 +116,7 @@ def send_otp(request):
                 return redirect('userSignup')
             donor_phone1 = User.objects.filter(contact = data.get('phone'), email = data.get('email'), is_verified = 0).first()
             if donor_phone1 != None and donor_phone1.contact == data.get('phone') and donor_phone1.email == data.get('email') and donor_phone1.is_verified == 0:
-                # otp =send_otp_to_phone(phone)
                 otp =send_otp_to_mail(email)
-                # otp = 222222
                 donor_phone1.name = name
                 donor_phone1.gender = gender
                 donor_phone1.address = address
@@ -129,21 +125,20 @@ def send_otp(request):
                 donor_phone1.otp = otp # type: ignore
                 donor_phone1.save()
                 id = donor_phone1.id # type: ignore
+                phone = donor_phone1.email 
                 messages.success(request, 'OTP sent Successfully...!')
-                return render(request, "user/otpVerify.html", {"id" : id, "phone" : phone})
+                return render(request, "user/otpVerify.html", {"id" : id, "email" : phone})
             if User.objects.filter(email=email).exists() or User.objects.filter(contact=phone).exists():
                 messages.error(request, "Duplicate found....")
                 return redirect('userSignup')  # Redirect to the donor signup page or any other appropriate page
             
-            # otp =send_otp_to_phone(phone)
             otp =send_otp_to_mail(email)
-            # otp = 222222
             user = User(name = name, contact = phone, email = email, gender = gender, address = address, password = password, location = location, otp = otp, created_date = formatted_time)
             user.save()
             id = user.id # type: ignore
-            phone = user.contact
+            phone = user.email
             messages.success(request, 'OTP sent Successfully...!')
-            return render(request, "user/otpVerify.html", {"id" : id, "phone" : phone})
+            return render(request, "user/otpVerify.html", {"id" : id, "email" : phone})
     else:
         messages.error(request, "Password does not match...")
         return redirect('index') 
@@ -160,7 +155,7 @@ def verify_otp(request, id):
     category = data.get('type')
     if category == "donor":
         donors = Donor.objects.get(id=id)
-        phone = donors.contact
+        phone = donors.email
         otp = f"{n1}{n2}{n3}{n4}{n5}{n6}"
         if donors.otp == otp:
             donors.is_verified = 1
@@ -170,10 +165,10 @@ def verify_otp(request, id):
             return redirect("donorLogin")
         else:
             messages.error(request, "Invalid otp")
-            return render(request, "donor/otpVerify.html", {"id" : id, "phone" : phone})
+            return render(request, "donor/otpVerify.html", {"id" : id, "email" : phone})
     else:
         user = User.objects.get(id=id)
-        phone = user.contact
+        phone = user.email
         otp = f"{n1}{n2}{n3}{n4}{n5}{n6}"
         if user.otp == otp:
             user.is_verified = 1
@@ -183,7 +178,7 @@ def verify_otp(request, id):
             return redirect("userLogin")
         else:
             messages.error(request, "Invalid otp")
-            return render(request, "user/otpVerify.html", {"id" : id, "phone" : phone})
+            return render(request, "user/otpVerify.html", {"id" : id, "email" : phone})
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def logout_all(request):
@@ -222,7 +217,7 @@ def add_food(request, id):
         id = request.session['donorid']
         foods = Food(name = name, type = type, ingredients = ingredientss, quantity = quantity, category= category, prepared_time=preparation_time, is_deliverable= is_del,  description = description,  image = request.FILES['images'], donor_id = id, created_date = formatted_time)
         foods.save()
-        foods = Food.objects.filter(is_enabled=1).order_by('-id').all()
+        foods = Food.objects.filter(is_enabled=1, is_deleted = 0).order_by('-id').all()
         messages.success(request, "Food added successfully...!")
         return render(request, "donor/home.html", {"id" : id, "ingredients" : ingredients, "foods" : foods})
 
@@ -242,7 +237,7 @@ def donorHome(request):
         # Get and reset the unread request count
         count = unread_requests.count()
 
-        foods = Food.objects.filter(is_enabled=1).order_by('-id').all()
+        foods = Food.objects.filter(is_enabled=1, is_deleted = 0).order_by('-id').all()
         return render(request, "donor/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id, 'count' : count})
 
 def get_food(request, id, donor_id, category):
@@ -319,7 +314,7 @@ def userHome(request):
     if id == 0:
         return redirect("userLogin")
     else:
-        foods = Food.objects.filter(is_enabled=1).order_by('-id').all()
+        foods = Food.objects.filter(is_enabled=1, is_deleted = 0).order_by('-id').all()
         return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
 
 def profile(request, id, category):
@@ -352,7 +347,7 @@ def ratings(request, category):
                 if orders != None:
                     orders.is_rated = 1
                     orders.save()
-                    foods = Food.objects.filter(is_enabled = 1).order_by('-id').all()
+                    foods = Food.objects.filter(is_enabled = 1, is_deleted = 0).order_by('-id').all()
                     messages.success(request, "Rating given success...")
                     return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
 
@@ -407,7 +402,7 @@ def editProfile(request, id, category):
             return render(request, "user/profile.html", {"user" : user})
 
 def view_food(request, id):
-    foods = Food.objects.filter(donor_id = id).order_by('-id').all()
+    foods = Food.objects.filter(donor_id = id, is_deleted = 0).order_by('-id').all()
     id = request.session['donorid']
     return render(request, "donor/viewFood.html", {"id" : id, "ingredients" : ingredients, "foods" : foods})
 
@@ -416,7 +411,7 @@ def change_food_status(request, id, value) :
     food.is_enabled = value
     food.save()
     id = food.donor_id
-    foods = Food.objects.filter(donor_id = id).order_by('-id').all()
+    foods = Food.objects.filter(donor_id = id, is_deleted = 0).order_by('-id').all()
     messages.success(request, "Food status has been updated...!")
     return render(request, "donor/viewFood.html", {"id" : id, "ingredients" : ingredients, "foods" : foods})
 
@@ -424,7 +419,7 @@ def delete_food(request, id):
     food = Food.objects.get(id = id)
     food.delete()
     id = request.session['donorid']
-    foods = Food.objects.filter(donor_id = id).order_by('-id').all()
+    foods = Food.objects.filter(donor_id = id, is_deleted = 0).order_by('-id').all()
     messages.success(request, "Food has been deleted successfully...!")
     return render(request, "donor/viewFood.html", {"id" : id, "ingredients" : ingredients, "foods" : foods})
 
@@ -478,9 +473,15 @@ def update_food(request):
         food.updated_date = formatted_time # type: ignore
         food.save()
         id = request.session['donorid']
-        foods = Food.objects.filter(is_enabled = 1).order_by('-id').all()
+        foods = Food.objects.filter(is_enabled = 1, is_deleted = 0).order_by('-id').all()
         messages.success(request, "Food updated successfully...!")
         return render(request, "donor/home.html", {"id" : id, "ingredients" : ingredients, "foods" : foods})
+    else:
+        id = request.session['donorid']
+        foods = Food.objects.filter(is_enabled = 1, is_deleted = 0).order_by('-id').all()
+        messages.success(request, "Please try again")
+        return redirect("donorHome")
+
     
 def order_food(request):
     if request.method == "POST":
@@ -496,7 +497,7 @@ def order_food(request):
         food_qty = Food.objects.filter(id = food_id).first()
         if quantity > int(food_qty.quantity): # type: ignore
             id = request.session['userid']
-            foods = Food.objects.filter(is_enabled = 1).order_by('-id').all()
+            foods = Food.objects.filter(is_enabled = 1, is_deleted = 0).order_by('-id').all()
             messages.error(request, "Out of stock... please try again")
             return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
 
@@ -507,7 +508,7 @@ def order_food(request):
         food.quantity -= quantity # type: ignore
         food.save()
         id = request.session['userid']
-        foods = Food.objects.filter(is_enabled = 1).order_by('-id').all()
+        foods = Food.objects.filter(is_enabled = 1, is_deleted = 0).order_by('-id').all()
         messages.success(request, "Food ordered successfully...!")
         return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
 
@@ -539,7 +540,7 @@ def food_request(request, category):
             requests.save()
             send_email_new_request(request)
             id = request.session['userid']
-            foods = Food.objects.filter(is_enabled = 1).order_by('-id').all()
+            foods = Food.objects.filter(is_enabled = 1, is_deleted = 0).order_by('-id').all()
             messages.success(request, "Request send successfully...!")
             return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
     else:
@@ -550,7 +551,7 @@ def food_request(request, category):
             requests.save()
             send_email_new_request(request)
             id = request.session['userid']
-            foods = Food.objects.filter(is_enabled = 1).all()
+            foods = Food.objects.filter(is_enabled = 1, is_deleted = 0).all()
             messages.success(request, "Request send successfully...!")
             return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id})
          
@@ -720,6 +721,6 @@ def test_food(request, foodId, temp, humidity):
         # print(type(result))
         # print(resu)
         id = request.session['userid']
-        foods = Food.objects.filter(is_enabled = 1).order_by('-id').all()
+        foods = Food.objects.filter(is_enabled = 1, is_deleted = 0).order_by('-id').all()
         return render(request, "user/home.html", {"ingredients" : ingredients, "foods" : foods, "id" : id, 'result' : result})
     

@@ -36,6 +36,7 @@ class Food(models.Model):
     description = models.TextField(null=True)
     image = models.ImageField(upload_to="food_images/", max_length=250, null=False, default=None)
     is_enabled = models.IntegerField(default=1)
+    is_deleted = models.IntegerField(default=0)
     created_date = models.DateTimeField(null=True)
     updated_date = models.DateTimeField(null=True)
 

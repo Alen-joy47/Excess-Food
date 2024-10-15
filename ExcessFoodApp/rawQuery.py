@@ -73,7 +73,6 @@ WHERE requests.req_type = 2
     return data
 
 def get_ratings(donor_id):
-    # print(donor_id)
     raw_query = """
         SELECT ROUND(AVG(ratings.ratings), 1) AS rating, donors.name AS donor_name, donors.id
         FROM ratings
@@ -84,17 +83,19 @@ def get_ratings(donor_id):
     """
 
     with connection.cursor() as cursor:
-        cursor.execute(raw_query, [donor_id])
-        results = cursor.fetchall()
+        try:
+            cursor.execute(raw_query, [donor_id])
+            results = cursor.fetchall()
+        except Exception as e:
+            # Log the exception if logging is set up
+            print(f"Error executing get_ratings query: {e}")
+            return []  # Return an empty list or handle as appropriate
 
-    # Convert the results to a list of dictionaries
-    columns = [col[0] for col in cursor.description]  # type: ignore
-    data = [dict(zip(columns, row)) for row in results]
-
-    # if not data:
-    #     return None  # or return a specific value, or raise an exception
-
-    # rating = data[0]['rating']
-    # print(rating)
+    # Check if cursor.description is not None
+    if cursor.description:
+        columns = [col[0] for col in cursor.description]
+        data = [dict(zip(columns, row)) for row in results]
+    else:
+        data = []
 
     return data

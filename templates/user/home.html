@@ -59,14 +59,17 @@
     </div>
   </div>
 
-  <!-- Open the modal automatically -->
+  <!-- Open the modal automatically only if it has not been shown before -->
   <script>
     $(document).ready(function(){
-      $('#highProbabilityModal').modal('show');
+      if (!sessionStorage.getItem('highProbabilityModalShown')) {
+        $('#highProbabilityModal').modal('show');
+        sessionStorage.setItem('highProbabilityModalShown', 'true');
+      }
     });
   </script>
   {% else %}
-  <!-- Bootstrap Modal for result "1" -->
+  <!-- Bootstrap Modal for result other than "1" -->
   <div class="modal fade" id="lowProbabilityModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -86,14 +89,18 @@
     </div>
   </div>
 
-  <!-- Open the modal automatically -->
+  <!-- Open the modal automatically only if it has not been shown before -->
   <script>
     $(document).ready(function(){
-      $('#lowProbabilityModal').modal('show');
+      if (!sessionStorage.getItem('lowProbabilityModalShown')) {
+        $('#lowProbabilityModal').modal('show');
+        sessionStorage.setItem('lowProbabilityModalShown', 'true');
+      }
     });
   </script>
 {% endif %}
-  {% endif %}
+{% endif %}
+
   <div class="row">
     {% for food in foods %}
     {% if food.quantity > 0 %}
@@ -122,10 +129,10 @@
             {% endif %}
           </div>
           <div class="description-container">
-            <p class="card-text description">{{ food.description|truncatewords:30 }}</p>
-            {% if food.description|wordcount > 30 %}
-            <p class="read-more m-0 p-0"><a href="#" class="toggle-description">Read More</a></p>
+            <p class="card-text description">{{ food.description|truncatewords:50 }}</p>
+            {% if food.description|wordcount > 50 %}
             <p class="full-description">{{ food.description }}</p>
+            <p class="read-more m-0 p-0"><a href="#" class="toggle-description">Read More</a></p>
             {% endif %}
           </div>
         </div>
@@ -151,19 +158,23 @@
 </style>
 
 <script>
-  // Add JavaScript to toggle visibility
-  document.addEventListener("DOMContentLoaded", function () {
-    var toggleButtons = document.querySelectorAll('.toggle-description');
+  document.querySelectorAll('.toggle-description').forEach(item => {
+      item.addEventListener('click', event => {
+          event.preventDefault();
+          let descriptionContainer = item.closest('.description-container');
+          let fullDescription = descriptionContainer.querySelector('.full-description');
+          let truncatedDescription = descriptionContainer.querySelector('.description');
 
-    toggleButtons.forEach(function (button) {
-      button.addEventListener('click', function (event) {
-        event.preventDefault();
-        var descriptionContainer = this.closest('.description-container');
-        var fullDescription = descriptionContainer.querySelector('.full-description');
-        descriptionContainer.classList.toggle('show-full-description');
-        button.textContent = descriptionContainer.classList.contains('show-full-description') ? 'Read Less' : 'Read More';
+          if (fullDescription.style.display === 'none') {
+              fullDescription.style.display = 'block';
+              truncatedDescription.style.display = 'none';
+              item.textContent = 'Read Less';
+          } else {
+              fullDescription.style.display = 'none';
+              truncatedDescription.style.display = 'block';
+              item.textContent = 'Read More';
+          }
       });
-    });
   });
 </script>
 
